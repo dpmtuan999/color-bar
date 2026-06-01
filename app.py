@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 import colorsys
 import io
 import base64
+import os
 
 st.set_page_config(
     page_title="Beyond Photography",
@@ -66,23 +67,22 @@ figure, figure img                   { border: none !important; border-radius: 0
     font-family: "Google Sans Flex", sans-serif !important;
 }
 
-/* Download Button - Monochrome minimalist button with 32px height */
-.stDownloadButton {
+/* Download & Regular Buttons - Monochrome minimalist button with 32px height */
+.stDownloadButton, .stButton {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-end !important;
     margin: 0 !important;
     padding: 0 !important;
 }
-.stDownloadButton > button { 
+.stDownloadButton > button, .stButton > button { 
     background: var(--surface) !important; 
     border: 1px solid var(--line) !important; 
     border-radius: 4px !important; 
     color: var(--t1) !important; 
-    font-size: 0.75rem !important; 
+    font-size: 0.72rem !important; 
     font-weight: 600 !important; 
-    padding: 0 14px !important; 
-    width: auto !important; 
+    padding: 0 10px !important; 
+    width: 100% !important; 
     height: 32px !important; 
     min-height: 32px !important;
     line-height: 1 !important;
@@ -94,7 +94,7 @@ figure, figure img                   { border: none !important; border-radius: 0
     text-transform: uppercase !important;
     letter-spacing: 0.05em !important;
 }
-.stDownloadButton > button:hover { 
+.stDownloadButton > button:hover, .stButton > button:hover { 
     border-color: var(--t1) !important; 
     color: var(--surface) !important; 
     background: var(--t1) !important; 
@@ -199,6 +199,20 @@ def macro_png(grps, w=1400, h=100):
     if x<w: d.rectangle([x,0,w,h],fill=grps[-1]["avg_rgb"])
     buf=io.BytesIO(); img.save(buf,"PNG"); return buf.getvalue()
 
+def copy_bytes_to_clipboard(png_bytes):
+    try:
+        import subprocess
+        temp_path = os.path.join(os.path.dirname(__file__), "temp_clip.png")
+        with open(temp_path, "wb") as f:
+            f.write(png_bytes)
+        script = f'set the clipboard to (read (POSIX file "{temp_path}") as «class PNGf»)'
+        res = subprocess.run(["osascript", "-e", script], capture_output=True)
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return res.returncode == 0
+    except Exception:
+        return False
+
 @st.cache_data
 def wheel_base(size=1200):
     x=np.linspace(-1,1,size); y=np.linspace(-1,1,size)
@@ -288,11 +302,40 @@ dom = sec = acc = []
 
 # ─── LEFT ─────────────────────────────────────────────────────────────────────
 with col_left:
+    st.markdown("<p style='font-size: 0.8rem; font-weight: 600; color: var(--t2); margin-bottom: 0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
     up = st.file_uploader("upload", type=["jpg","jpeg","png"], label_visibility="collapsed")
-    st.markdown("<div style='font-size:.7rem;color:var(--t3);text-align:center;margin-top:-.3rem;'>JPG · PNG</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div style='text-align: center; margin: 0.25rem 0; font-size: 0.72rem; color: var(--t3);'>hoặc</div>", unsafe_allow_html=True)
+    
+    if st.button("📋 Dán ảnh từ Clipboard", use_container_width=True):
+        try:
+            from PIL import ImageGrab
+            clipboard_image = ImageGrab.grabclipboard()
+            if clipboard_image is not None:
+                if isinstance(clipboard_image, list) and len(clipboard_image) > 0:
+                    first_file = clipboard_image[0]
+                    try:
+                        st.session_state["clipboard_image"] = Image.open(first_file)
+                        st.toast("Đã dán ảnh từ tệp tin Clipboard!", icon="📋")
+                    except Exception:
+                        st.warning("Tệp tin trong clipboard không phải là hình ảnh hợp lệ.")
+                else:
+                    st.session_state["clipboard_image"] = clipboard_image
+                    st.toast("Đã dán ảnh từ Clipboard thành công!", icon="📋")
+            else:
+                st.warning("Không tìm thấy hình ảnh nào trong Clipboard. Hãy copy ảnh trước.")
+        except Exception as e:
+            st.error(f"Không thể đọc clipboard: {e}")
+
+    st.markdown("<div style='font-size:.7rem;color:var(--t3);text-align:center;margin-top:0.4rem;'>JPG · PNG</div>", unsafe_allow_html=True)
 
     image = None
-    if up: image = Image.open(up)
+    if up: 
+        image = Image.open(up)
+        if "clipboard_image" in st.session_state:
+            del st.session_state["clipboard_image"]
+    elif "clipboard_image" in st.session_state:
+        image = st.session_state["clipboard_image"]
 
     if image:
         # K-means
@@ -358,7 +401,7 @@ with col_left:
         st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:3.5rem 1.5rem;
         text-align:center;margin-top:.5rem;">
         <div style="font-size:1rem;font-weight:400;color:var(--t2);">Chưa có ảnh</div>
-        <div style="font-size:.78rem;color:var(--t3);margin-top:.4rem;">Tải ảnh lên ở cột bên trái để bắt đầu</div>
+        <div style="font-size:.78rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
 
 
@@ -403,8 +446,17 @@ with col_right:
             )
             st.markdown("<div style='height:.55rem'></div>", unsafe_allow_html=True)
             buf_w=io.BytesIO(); make_wheel(all_pts,1200,1200).save(buf_w,"PNG")
-            st.download_button("↓ Tải bánh xe màu sắc", data=buf_w.getvalue(),
-                               file_name="color_wheel.png", mime="image/png", key="dl_wheel")
+            
+            wcol1, wcol2 = st.columns([1, 1])
+            with wcol1:
+                st.download_button("↓ Tải bánh xe", data=buf_w.getvalue(),
+                                   file_name="color_wheel.png", mime="image/png", key="dl_wheel")
+            with wcol2:
+                if st.button("📋 Copy bánh xe", key="copy_wheel"):
+                    if copy_bytes_to_clipboard(buf_w.getvalue()):
+                        st.toast("Đã copy bánh xe màu vào Clipboard!", icon="📋")
+                    else:
+                        st.error("Không thể copy.")
 
         with lc:
             st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;'
@@ -434,13 +486,19 @@ with col_right:
                     unsafe_allow_html=True)
 
         # Macro bar Header
-        mcol1, mcol2 = st.columns([5, 1])
+        mcol1, mcol2, mcol3 = st.columns([4, 1.2, 1.2])
         with mcol1:
             st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Khái quát theo nhóm</div>',
                         unsafe_allow_html=True)
         with mcol2:
             st.download_button("↓ Tải dải màu", data=macro_png(gs),
                                file_name="bar_macro.png", mime="image/png", key="dl_macro")
+        with mcol3:
+            if st.button("📋 Copy dải màu", key="copy_macro"):
+                if copy_bytes_to_clipboard(macro_png(gs)):
+                    st.toast("Đã copy dải màu khái quát!", icon="📋")
+                else:
+                    st.error("Không thể copy.")
 
         # Macro bar spans 100% width, height=36px
         bar = '<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 0.75rem 0;">'
@@ -471,13 +529,19 @@ with col_right:
         master=[]
         for g in gs: master.extend(g["items"])
 
-        dcol1, dcol2 = st.columns([5, 1])
+        dcol1, dcol2, dcol3 = st.columns([4, 1.2, 1.2])
         with dcol1:
             st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 20 sắc độ</div>',
                         unsafe_allow_html=True)
         with dcol2:
             st.download_button("↓ Tải dải màu", data=bar_png(master),
                                file_name="bar_detail.png", mime="image/png", key="dl_detail")
+        with dcol3:
+            if st.button("📋 Copy dải màu", key="copy_detail"):
+                if copy_bytes_to_clipboard(bar_png(master)):
+                    st.toast("Đã copy dải màu chi tiết!", icon="📋")
+                else:
+                    st.error("Không thể copy.")
 
         # Detail bar spans 100% width, height=36px
         bar2='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1.25rem 0;">'
@@ -498,8 +562,8 @@ with col_right:
             tot   = g["total_pct"]
             items = sorted(g["items"], key=lambda x:x["pct"], reverse=True)
 
-            # Group header with title and download button next to each other
-            gcol1, gcol2 = st.columns([5, 1])
+            # Group header with title, download, and copy buttons
+            gcol1, gcol2, gcol3 = st.columns([4, 1.2, 1.2])
             with gcol1:
                 st.markdown(
                     f'<div style="display:flex;align-items:baseline;gap:10px;margin-top:0.25rem;">'
@@ -513,6 +577,12 @@ with col_right:
                 st.download_button("↓ Tải dải màu", data=bar_png(items),
                                    file_name=f'bar_{g["key"]}.png', mime="image/png",
                                    key=f'dl_g_{g["key"]}')
+            with gcol3:
+                if st.button("📋 Copy dải màu", key=f'copy_g_{g["key"]}'):
+                    if copy_bytes_to_clipboard(bar_png(items)):
+                        st.toast(f"Đã copy dải màu {g['label_short'].lower()}!", icon="📋")
+                    else:
+                        st.error("Không thể copy.")
 
             # Group bar — spans 100% width, height=36px
             bh='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1rem 0;">'
@@ -551,5 +621,5 @@ with col_right:
         st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:5rem 2rem;
         text-align:center;margin-top:2rem;">
         <div style="font-size:1.4rem;font-weight:300;color:var(--t3);">Chưa có ảnh để phân tích</div>
-        <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh lên ở cột bên trái để bắt đầu</div>
+        <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
