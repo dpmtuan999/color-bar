@@ -468,6 +468,9 @@ with col_right:
                     unsafe_allow_html=True)
 
         # Detail bar Header
+        master=[]
+        for g in gs: master.extend(g["items"])
+
         dcol1, dcol2 = st.columns([5, 1])
         with dcol1:
             st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 20 sắc độ</div>',
