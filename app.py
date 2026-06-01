@@ -439,11 +439,11 @@ with col_right:
             st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Khái quát theo nhóm</div>',
                         unsafe_allow_html=True)
         with mcol2:
-            st.download_button("↓ Tải ảnh", data=macro_png(gs),
+            st.download_button("↓ Tải dải màu", data=macro_png(gs),
                                file_name="bar_macro.png", mime="image/png", key="dl_macro")
 
-        # Macro bar spans 100% width, height=48px (large/to)
-        bar = '<div style="display:flex;width:100%;height:48px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 0.75rem 0;">'
+        # Macro bar spans 100% width, height=36px
+        bar = '<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 0.75rem 0;">'
         for g in gs:
             if g["total_pct"]>0:
                 tc      = on_color(g["avg_rgb"])
@@ -476,11 +476,11 @@ with col_right:
             st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 20 sắc độ</div>',
                         unsafe_allow_html=True)
         with dcol2:
-            st.download_button("↓ Tải ảnh", data=bar_png(master),
+            st.download_button("↓ Tải dải màu", data=bar_png(master),
                                file_name="bar_detail.png", mime="image/png", key="dl_detail")
 
-        # Detail bar spans 100% width, height=40px (intermediate/large)
-        bar2='<div style="display:flex;width:100%;height:40px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1.25rem 0;">'
+        # Detail bar spans 100% width, height=36px
+        bar2='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1.25rem 0;">'
         for it in master:
             r2,g2,b2=it["rgb"]; pv=it["pct"]*100
             bar2+=f'<div style="background:rgb({r2},{g2},{b2});width:{pv}%;height:100%;" title="{it["hex"]} {pv:.1f}%"></div>'
@@ -514,8 +514,8 @@ with col_right:
                                    file_name=f'bar_{g["key"]}.png', mime="image/png",
                                    key=f'dl_g_{g["key"]}')
 
-            # Group bar — spans 100% width, height=32px (intermediate)
-            bh='<div style="display:flex;width:100%;height:32px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1rem 0;">'
+            # Group bar — spans 100% width, height=36px
+            bh='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1rem 0;">'
             for it in items:
                 w=(it["pct"]/(tot/100))*100
                 bh+=f'<div style="background:rgb({it["rgb"][0]},{it["rgb"][1]},{it["rgb"][2]});width:{w}%;height:100%;"></div>'
