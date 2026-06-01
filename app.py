@@ -18,30 +18,30 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..144,100..900&display=swap');
 
-/* Loại bỏ font-family khỏi wildcard để bảo vệ các icon hệ thống của Streamlit */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
-/* Ép font chữ Google Sans Flex chuẩn xác cho tất cả các thành phần văn bản */
-html, body, p, h1, h2, h3, h4, h5, h6, li, label, table, td, th, [data-testid="stMarkdownContainer"] p, span, summary, [data-testid="stExpander"] summary {
-    font-family: "Google Sans Flex", sans-serif !important;
+/* Force Google Sans Flex font globally */
+html, body, [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, 
+p, h1, h2, h3, h4, h5, h6, li, label, table, td, th, summary, [data-testid="stExpander"] summary {
+    font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 button div p, button div, .stDownloadButton button, [data-testid="stSidebar"] * {
-    font-family: "Google Sans Flex", sans-serif !important;
+    font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* Palette */
+/* Minimalist Black & White / Grayscale Palette */
 :root {
-    --bg:      #F9F8F5;
-    --surface: #FFFFFF;
-    --line:    #E8E5DF;
-    --line-s:  #F0EDE8;
-    --t1:      #1C1A17;
-    --t2:      #6B6860;
-    --t3:      #ADAAA3;
-    --warm:    #7D6145;
-    --warm-bg: #F2EAE0;
+    --bg:      #F5F5F7;  /* Cool light grey */
+    --surface: #FFFFFF;  /* White */
+    --line:    #E5E5EA;  /* Muted cool grey border */
+    --line-s:  #F2F2F7;
+    --t1:      #1D1D1F;  /* Deep rich black */
+    --t2:      #515154;  /* Deep charcoal gray */
+    --t3:      #86868B;  /* Muted gray */
+    --warm:    #1D1D1F;  /* Black accent */
+    --warm-bg: #E8E8ED;  /* Hover gray background */
 }
 
 .stApp                    { background: var(--bg) !important; }
@@ -52,61 +52,72 @@ button div p, button div, .stDownloadButton button, [data-testid="stSidebar"] * 
 [data-testid="stSidebar"]            { background: var(--surface) !important; border-right: 1px solid var(--line) !important; box-shadow: none !important; }
 [data-testid="stSidebar"] > div      { padding: 2.25rem 1.75rem !important; }
 
-/* Kill every default Streamlit image decoration */
+/* Remove Streamlit default image styling decorations */
 [data-testid="stImage"],
 [data-testid="stImage"] > *,
 [data-testid="stImage"] img,
 figure, figure img                   { border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; display: block !important; line-height: 0 !important; }
 
-/* File uploader */
-[data-testid="stFileUploader"]       { background: var(--surface) !important; border: 1px dashed var(--line) !important; border-radius: 0 !important; padding: 1.75rem !important; }
+/* Clean File Uploader */
+[data-testid="stFileUploader"]       { background: var(--surface) !important; border: 1px dashed var(--line) !important; border-radius: 4px !important; padding: 1.75rem !important; }
 [data-testid="stFileUploader"]:hover { border-color: var(--warm) !important; }
+[data-testid="stFileUploadDropzone"] p {
+    color: var(--t2) !important;
+    font-family: "Google Sans Flex", sans-serif !important;
+}
 
-/* Download button - ĐỒNG BỘ CHIỀU CAO 36PX VỚI THANH MÀU */
+/* Download Button - Monochrome minimalist button with 32px height */
 .stDownloadButton {
     display: flex !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 .stDownloadButton > button { 
     background: var(--surface) !important; 
     border: 1px solid var(--line) !important; 
-    border-radius: 0 !important; 
-    color: var(--t2) !important; 
-    font-size: 1rem !important; 
-    font-weight: 500 !important; 
-    padding: 0 !important; 
-    width: 100% !important; 
-    height: 36px !important; /* Ép cứng chiều cao 36px */
-    min-height: 36px !important;
+    border-radius: 4px !important; 
+    color: var(--t1) !important; 
+    font-size: 0.75rem !important; 
+    font-weight: 600 !important; 
+    padding: 0 14px !important; 
+    width: auto !important; 
+    height: 32px !important; 
+    min-height: 32px !important;
     line-height: 1 !important;
     box-shadow: none !important; 
-    transition: border-color .15s, color .15s !important; 
+    transition: all .2s cubic-bezier(0.16, 1, 0.3, 1) !important; 
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
 }
-.stDownloadButton > button:hover { border-color: var(--warm) !important; color: var(--warm) !important; background: var(--warm-bg) !important; box-shadow: none !important; }
+.stDownloadButton > button:hover { 
+    border-color: var(--t1) !important; 
+    color: var(--surface) !important; 
+    background: var(--t1) !important; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; 
+}
 
 /* Expanders */
 [data-testid="stExpander"]           { background: transparent !important; border: none !important; border-bottom: 1px solid var(--line-s) !important; border-radius: 0 !important; box-shadow: none !important; }
-[data-testid="stExpander"] summary   { color: var(--t2) !important; font-size: 0.83rem !important; font-weight: 400 !important; padding: 0.65rem 0 !important; }
+[data-testid="stExpander"] summary   { color: var(--t2) !important; font-size: 0.83rem !important; font-weight: 500 !important; padding: 0.65rem 0 !important; }
 [data-testid="stExpander"] > div     { padding: 0.25rem 0 0.8rem !important; }
 
 /* HR */
 hr { border: none !important; border-top: 1px solid var(--line) !important; margin: 1.75rem 0 !important; }
 
-/* Global text */
-h1                          { font-size: 2.5rem !important; font-weight: 300 !important; letter-spacing: -0.035em !important; color: var(--t1) !important; line-height: 1.05 !important; margin: 0 !important; }
+/* Global text styling */
+h1                          { font-size: 2.25rem !important; font-weight: 700 !important; letter-spacing: -0.03em !important; color: var(--t1) !important; line-height: 1.1 !important; margin: 0 !important; }
 p, li, label, td, th, span { color: var(--t2) !important; font-size: 0.875rem !important; line-height: 1.6 !important; }
 code                        { font-family: "SF Mono", "Courier New", monospace !important; background: transparent !important; color: var(--t3) !important; font-size: 0.68rem !important; border: none !important; padding: 0 !important; }
 
-/* Misc */
+/* Misc overrides */
 [data-testid="column"]              { padding: 0 0.35rem !important; }
-::-webkit-scrollbar                 { width: 3px; height: 3px; }
-::-webkit-scrollbar-thumb           { background: var(--line); }
+::-webkit-scrollbar                 { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb           { background: var(--line); border-radius: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,7 +131,7 @@ def img_to_b64(img, fmt="JPEG"):
     return base64.b64encode(buf.getvalue()).decode()
 
 def lum(rgb): return 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]
-def on_color(rgb): return "#1C1A17" if lum(rgb) > 155 else "#FFFFFF"
+def on_color(rgb): return "#1D1D1F" if lum(rgb) > 155 else "#FFFFFF"
 
 def get_color_name(rgb):
     r,g,b = [x/255 for x in rgb]
@@ -171,7 +182,7 @@ def wavg(grp):
     return tuple(int(sum(i["rgb"][j]*i["pct"] for i in grp)/tot) for j in range(3))
 
 def bar_png(items, w=1400, h=100):
-    img = Image.new("RGB",(w,h),(249,248,245))
+    img = Image.new("RGB",(w,h),(245,245,247))
     d = ImageDraw.Draw(img); x=0
     tot = sum(i["pct"] for i in items)
     for it in items:
@@ -180,7 +191,7 @@ def bar_png(items, w=1400, h=100):
     buf=io.BytesIO(); img.save(buf,"PNG"); return buf.getvalue()
 
 def macro_png(grps, w=1400, h=100):
-    img = Image.new("RGB",(w,h),(249,248,245))
+    img = Image.new("RGB",(w,h),(245,245,247))
     d = ImageDraw.Draw(img); x=0
     for g in grps:
         if g["total_pct"]>0:
@@ -204,7 +215,7 @@ def wheel_base(size=1200):
 
 def make_wheel(pts, size=1200, out=320):
     wimg=wheel_base(size)
-    bg=Image.new("RGBA",(size,size),(249,248,245,255))
+    bg=Image.new("RGBA",(size,size),(245,245,247,255))
     bg.paste(wimg,(0,0),wimg); wimg=bg
     d=ImageDraw.Draw(wimg); cx=cy=size/2; mr=(size/2)*.93; sc=size/800
     ring=int(19*sc); dot=int(13*sc)
@@ -222,17 +233,17 @@ def make_wheel(pts, size=1200, out=320):
 with st.sidebar:
     st.markdown("""
     <div style="margin-bottom:2rem;">
-        <div style="font-family: 'Google Sans Flex', sans-serif; font-size:1.35rem;font-weight:700;color:#1C1A17;letter-spacing:-0.025em;line-height:1.15;">
-            Beyond<br><span style="color:#7D6145;">Photography</span>
+        <div style="font-family: 'Google Sans Flex', sans-serif; font-size:1.35rem;font-weight:700;color:#1D1D1F;letter-spacing:-0.025em;line-height:1.15;">
+            Beyond<br><span style="color:#000000;font-weight:800;">Photography</span>
         </div>
-        <div style="margin-top:0.4rem;font-size:0.66rem;font-weight:500;letter-spacing:0.15em;
-                    text-transform:uppercase;color:#ADAAA3;">Color Analysis System</div>
+        <div style="margin-top:0.4rem;font-size:0.66rem;font-weight:600;letter-spacing:0.15em;
+                    text-transform:uppercase;color:#86868B;">Color Analysis System</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("""<p style="font-size:0.84rem;color:#6B6860;line-height:1.65;margin-bottom:1rem;">
-    Phối hợp màu theo tỷ lệ vàng <strong style="color:#7D6145;">60 – 30 – 10</strong>
+    st.markdown("""<p style="font-size:0.84rem;color:var(--t2);line-height:1.65;margin-bottom:1rem;">
+    Phối hợp màu theo tỷ lệ vàng <strong style="color:var(--t1);">60 – 30 – 10</strong>
     để đạt hiệu quả thị giác tốt nhất.
     </p>""", unsafe_allow_html=True)
 
@@ -245,20 +256,20 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("""
-    <div style="margin-bottom:.5rem;font-size:0.64rem;font-weight:500;letter-spacing:.13em;
-                text-transform:uppercase;color:#ADAAA3;">Tỷ lệ tham chiếu</div>
+    <div style="margin-bottom:.5rem;font-size:0.64rem;font-weight:600;letter-spacing:.13em;
+                text-transform:uppercase;color:var(--t3);">Tỷ lệ tham chiếu</div>
     <div style="display:flex;flex-direction:column;gap:9px;">
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:60%;height:2px;background:#7D6145;"></div>
-            <span style="font-size:0.75rem;color:#6B6860;">60% Chính</span>
+            <div style="width:60%;height:3px;background:var(--t1);"></div>
+            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">60% Chính</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:30%;height:2px;background:#B8A08A;"></div>
-            <span style="font-size:0.75rem;color:#6B6860;">30% Phụ</span>
+            <div style="width:30%;height:3px;background:var(--t3);"></div>
+            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">30% Phụ</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:10%;height:2px;background:#D8D0C4;"></div>
-            <span style="font-size:0.75rem;color:#6B6860;">10% Nhấn</span>
+            <div style="width:10%;height:3px;background:var(--line);"></div>
+            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">10% Nhấn</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -267,8 +278,8 @@ with st.sidebar:
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown("""
 <h1>Beyond Photography</h1>
-<div style="margin-top:.35rem;font-size:.68rem;font-weight:500;letter-spacing:.2em;
-            text-transform:uppercase;color:#ADAAA3;">Hệ thống phân tích màu sắc</div>
+<div style="margin-top:.35rem;font-size:.68rem;font-weight:600;letter-spacing:.2em;
+            text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc</div>
 """, unsafe_allow_html=True)
 st.markdown("---")
 
@@ -278,7 +289,7 @@ dom = sec = acc = []
 # ─── LEFT ─────────────────────────────────────────────────────────────────────
 with col_left:
     up = st.file_uploader("upload", type=["jpg","jpeg","png"], label_visibility="collapsed")
-    st.markdown("<div style='font-size:.7rem;color:#D4D0C8;text-align:center;margin-top:-.3rem;'>JPG · PNG</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:.7rem;color:var(--t3);text-align:center;margin-top:-.3rem;'>JPG · PNG</div>", unsafe_allow_html=True)
 
     image = None
     if up: image = Image.open(up)
@@ -325,7 +336,7 @@ with col_left:
         thumb = image.copy(); thumb.thumbnail((900,1400),RESAMPLE)
         st.markdown(
             f'<img src="data:image/jpeg;base64,{img_to_b64(thumb)}" '
-            f'style="width:100%;display:block;border:1px solid #E8E5DF;" />',
+            f'style="width:100%;display:block;border:1px solid var(--line);" />',
             unsafe_allow_html=True
         )
 
@@ -337,17 +348,17 @@ with col_left:
         chips=""
         for rgb_c,lbl,p in [(ad,"Chính",pd),(as_,"Phụ",ps),(aa,"Nhấn",pa)]:
             chips+=(f'<div style="display:flex;align-items:center;gap:6px;background:#fff;'
-                    f'border:1px solid #E8E5DF;padding:5px 11px;">'
+                    f'border:1px solid var(--line);padding:5px 11px;">'
                     f'<div style="width:8px;height:8px;background:{rgb_to_hex(rgb_c)};"></div>'
-                    f'<span style="font-size:.68rem;font-weight:500;color:#6B6860;">'
+                    f'<span style="font-size:.68rem;font-weight:500;color:var(--t2);">'
                     f'{lbl} {p:.0f}%</span></div>')
         st.markdown(f'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:.9rem;">{chips}</div>', unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid #E8E5DF;padding:3.5rem 1.5rem;
+        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:3.5rem 1.5rem;
         text-align:center;margin-top:.5rem;">
-        <div style="font-size:1rem;font-weight:300;color:#D4D0C8;">Chưa có ảnh</div>
-        <div style="font-size:.78rem;color:#E0DDD7;margin-top:.4rem;">Tải ảnh lên để bắt đầu</div>
+        <div style="font-size:1rem;font-weight:400;color:var(--t2);">Chưa có ảnh</div>
+        <div style="font-size:.78rem;color:var(--t3);margin-top:.4rem;">Tải ảnh lên ở cột bên trái để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
 
 
@@ -371,8 +382,8 @@ with col_right:
         gs = sorted(groups, key=lambda x:x["total_pct"], reverse=True)
 
         # Section eyebrow
-        st.markdown('<div style="font-size:.65rem;font-weight:500;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:#ADAAA3;margin-bottom:1.25rem;">Phân tích hệ màu</div>',
+        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
+                    'text-transform:uppercase;color:var(--t3);margin-bottom:1.25rem;">Phân tích hệ màu</div>',
                     unsafe_allow_html=True)
 
         # ── A · WHEEL + LEGEND ────────────────────────────────────────────────
@@ -381,8 +392,8 @@ with col_right:
         wimg = make_wheel(all_pts, size=1200, out=300)
 
         with wc:
-            st.markdown('<div style="font-size:.64rem;font-weight:500;letter-spacing:.13em;'
-                        'text-transform:uppercase;color:#ADAAA3;margin-bottom:.6rem;">Bánh xe màu sắc</div>',
+            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;'
+                        'text-transform:uppercase;color:var(--t3);margin-bottom:.6rem;">Bánh xe màu sắc</div>',
                         unsafe_allow_html=True)
             # HTML img — no Streamlit border override
             st.markdown(
@@ -396,21 +407,21 @@ with col_right:
                                file_name="color_wheel.png", mime="image/png", key="dl_wheel")
 
         with lc:
-            st.markdown('<div style="font-size:.64rem;font-weight:500;letter-spacing:.13em;'
-                        'text-transform:uppercase;color:#ADAAA3;margin-bottom:.75rem;">Màu đại diện nhóm</div>',
+            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;'
+                        'text-transform:uppercase;color:var(--t3);margin-bottom:.75rem;">Màu đại diện nhóm</div>',
                         unsafe_allow_html=True)
             for g in gs:
                 st.markdown(f"""
                 <div style="display:flex;align-items:stretch;gap:0;
-                            margin-bottom:8px;border:1px solid #E8E5DF;overflow:hidden;">
+                            margin-bottom:8px;border:1px solid var(--line);overflow:hidden;">
                     <div style="width:68px;min-height:68px;flex-shrink:0;background:{g['avg_hex']};"></div>
                     <div style="padding:11px 15px;display:flex;flex-direction:column;
                                 justify-content:center;gap:3px;background:#fff;flex:1;">
-                        <div style="font-size:.88rem;font-weight:500;color:#1C1A17;">{g['name']}</div>
-                        <div style="font-size:.7rem;color:#ADAAA3;letter-spacing:.03em;">
+                        <div style="font-size:.88rem;font-weight:600;color:var(--t1);">{g['name']}</div>
+                        <div style="font-size:.7rem;color:var(--t3);letter-spacing:.03em;">
                             <span style="font-family:'Google Sans Flex',sans-serif;">{g['avg_hex']}</span>
                         </div>
-                        <div style="font-size:.8rem;font-weight:500;color:#7D6145;">{g['total_pct']:.1f}%</div>
+                        <div style="font-size:.8rem;font-weight:600;color:var(--t1);">{g['total_pct']:.1f}%</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -418,97 +429,97 @@ with col_right:
         st.markdown("---")
 
         # ── B · BARS ──────────────────────────────────────────────────────────
-        st.markdown('<div style="font-size:.65rem;font-weight:500;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:#ADAAA3;margin-bottom:1rem;">Thanh tỷ lệ màu</div>',
+        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
+                    'text-transform:uppercase;color:var(--t3);margin-bottom:1rem;">Thanh tỷ lệ màu</div>',
                     unsafe_allow_html=True)
 
-        # Macro bar — ĐỒNG BỘ CHIỀU CAO 36PX
-        st.markdown('<div style="font-size:.75rem;color:#ADAAA3;margin-bottom:.35rem;">Khái quát theo nhóm</div>',
-                    unsafe_allow_html=True)
-        
-        # Sử dụng cột Streamlit tỷ lệ 11:1 để nút tải nằm ngoài cùng bên phải
-        c1, c2 = st.columns([11, 1], gap="small")
-        with c1:
-            bar = '<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid #E8E5DF;margin:0;">'
-            for g in gs:
-                if g["total_pct"]>0:
-                    tc      = on_color(g["avg_rgb"])
-                    label   = f'{g["label_short"]} {g["total_pct"]:.0f}%' if g["total_pct"]>=8 else ""
-                    gshort  = g["label_short"]
-                    ghex    = g["avg_hex"]
-                    gpct    = g["total_pct"]
-                    bar+=(f'<div style="background:{ghex};width:{gpct}%;height:100%;'
-                          f'display:flex;align-items:center;justify-content:center;'
-                          f'font-size:11px;font-weight:500;color:{tc};letter-spacing:.04em;"'
-                          f' title="{gshort}: {ghex} ({gpct:.1f}%)">'
-                          f'{label}</div>')
-            bar+='</div>'
-            st.markdown(bar, unsafe_allow_html=True)
-        with c2:
-            st.download_button("↓", data=macro_png(gs),
+        # Macro bar Header
+        mcol1, mcol2 = st.columns([5, 1])
+        with mcol1:
+            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Khái quát theo nhóm</div>',
+                        unsafe_allow_html=True)
+        with mcol2:
+            st.download_button("↓ Tải ảnh", data=macro_png(gs),
                                file_name="bar_macro.png", mime="image/png", key="dl_macro")
 
+        # Macro bar spans 100% width, height=48px (large/to)
+        bar = '<div style="display:flex;width:100%;height:48px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 0.75rem 0;">'
+        for g in gs:
+            if g["total_pct"]>0:
+                tc      = on_color(g["avg_rgb"])
+                label   = f'{g["label_short"]} {g["total_pct"]:.0f}%' if g["total_pct"]>=8 else ""
+                gshort  = g["label_short"]
+                ghex    = g["avg_hex"]
+                gpct    = g["total_pct"]
+                bar+=(f'<div style="background:{ghex};width:{gpct}%;height:100%;'
+                      f'display:flex;align-items:center;justify-content:center;'
+                      f'font-size:12px;font-weight:600;color:{tc};letter-spacing:.04em;"'
+                      f' title="{gshort}: {ghex} ({gpct:.1f}%)">'
+                      f'{label}</div>')
+        bar+='</div>'
+        st.markdown(bar, unsafe_allow_html=True)
+
+        # Ratio info
         ratio = " &nbsp;·&nbsp; ".join(
-            f'<span style="color:#1C1A17;font-weight:500;">{g["label_short"]}</span>'
-            f' <span style="color:#7D6145;">{g["total_pct"]:.1f}%</span>'
+            f'<span style="color:var(--t1);font-weight:600;">{g["label_short"]}</span>'
+            f' <span style="color:var(--t1);">{g["total_pct"]:.1f}%</span>'
             for g in gs)
-        st.markdown(f'<div style="font-size:.73rem;color:#ADAAA3;margin-top:.4rem;margin-bottom:1rem;">{ratio}</div>',
+        st.markdown(f'<div style="font-size:.78rem;color:var(--t2);margin-top:0.1rem;margin-bottom:1.5rem;">{ratio}</div>',
                     unsafe_allow_html=True)
 
-        # Detail bar — ĐỒNG BỘ CHIỀU CAO 36PX
-        st.markdown('<div style="font-size:.75rem;color:#ADAAA3;margin-bottom:.35rem;">Chi tiết 20 sắc độ</div>',
-                    unsafe_allow_html=True)
-        master=[]
-        for g in gs: master.extend(g["items"])
-        
-        c3, c4 = st.columns([11, 1], gap="small")
-        with c3:
-            bar2='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid #E8E5DF;margin:0;">'
-            for it in master:
-                r2,g2,b2=it["rgb"]; pv=it["pct"]*100
-                bar2+=f'<div style="background:rgb({r2},{g2},{b2});width:{pv}%;height:100%;" title="{it["hex"]} {pv:.1f}%"></div>'
-            bar2+='</div>'
-            st.markdown(bar2, unsafe_allow_html=True)
-        with c4:
-            st.download_button("↓", data=bar_png(master),
+        # Detail bar Header
+        dcol1, dcol2 = st.columns([5, 1])
+        with dcol1:
+            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 20 sắc độ</div>',
+                        unsafe_allow_html=True)
+        with dcol2:
+            st.download_button("↓ Tải ảnh", data=bar_png(master),
                                file_name="bar_detail.png", mime="image/png", key="dl_detail")
+
+        # Detail bar spans 100% width, height=40px (intermediate/large)
+        bar2='<div style="display:flex;width:100%;height:40px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1.25rem 0;">'
+        for it in master:
+            r2,g2,b2=it["rgb"]; pv=it["pct"]*100
+            bar2+=f'<div style="background:rgb({r2},{g2},{b2});width:{pv}%;height:100%;" title="{it["hex"]} {pv:.1f}%"></div>'
+        bar2+='</div>'
+        st.markdown(bar2, unsafe_allow_html=True)
 
         st.markdown("---")
 
         # ── C · SWATCHES ──────────────────────────────────────────────────────
-        st.markdown('<div style="font-size:.65rem;font-weight:500;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:#ADAAA3;margin-bottom:1.1rem;">Dải sắc độ từng nhóm</div>',
+        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
+                    'text-transform:uppercase;color:var(--t3);margin-bottom:1.25rem;">Dải sắc độ từng nhóm</div>',
                     unsafe_allow_html=True)
 
         def render_group(g):
             tot   = g["total_pct"]
             items = sorted(g["items"], key=lambda x:x["pct"], reverse=True)
 
-            # Group header — name light, sub muted, pct accent
-            st.markdown(
-                f'<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px;">'
-                f'<span style="font-size:1rem;font-weight:400;color:#1C1A17;">{g["name"]}</span>'
-                f'<span style="font-size:.7rem;color:#ADAAA3;">{g["sub"]}</span>'
-                f'<span style="font-size:.8rem;font-weight:500;color:#7D6145;margin-left:auto;">{tot:.1f}%</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-            
-            # Group bar — ĐỒNG BỘ CHIỀU CAO 36PX
-            ca, cb = st.columns([11, 1], gap="small")
-            with ca:
-                bh='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid #E8E5DF;margin-bottom:12px;">'
-                for it in items:
-                    w=(it["pct"]/(tot/100))*100
-                    bh+=f'<div style="background:rgb({it["rgb"][0]},{it["rgb"][1]},{it["rgb"][2]});width:{w}%;height:100%;"></div>'
-                bh+='</div>'
-                st.markdown(bh, unsafe_allow_html=True)
-            with cb:
-                st.download_button("↓", data=bar_png(items),
+            # Group header with title and download button next to each other
+            gcol1, gcol2 = st.columns([5, 1])
+            with gcol1:
+                st.markdown(
+                    f'<div style="display:flex;align-items:baseline;gap:10px;margin-top:0.25rem;">'
+                    f'<span style="font-size:1.05rem;font-weight:600;color:var(--t1);">{g["name"]}</span>'
+                    f'<span style="font-size:.75rem;color:var(--t3);">{g["sub"]}</span>'
+                    f'<span style="font-size:.9rem;font-weight:600;color:var(--t1);margin-left:8px;">{tot:.1f}%</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            with gcol2:
+                st.download_button("↓ Tải dải màu", data=bar_png(items),
                                    file_name=f'bar_{g["key"]}.png', mime="image/png",
                                    key=f'dl_g_{g["key"]}')
 
-            # Swatch tiles — 8 per row
+            # Group bar — spans 100% width, height=32px (intermediate)
+            bh='<div style="display:flex;width:100%;height:32px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1rem 0;">'
+            for it in items:
+                w=(it["pct"]/(tot/100))*100
+                bh+=f'<div style="background:rgb({it["rgb"][0]},{it["rgb"][1]},{it["rgb"][2]});width:{w}%;height:100%;"></div>'
+            bh+='</div>'
+            st.markdown(bh, unsafe_allow_html=True)
+
+            # Swatch tiles — 8 per row (compacted for secondary hierarchy)
             CPR=8
             for ri in range(0,len(items),CPR):
                 chunk=items[ri:ri+CPR]
@@ -517,11 +528,11 @@ with col_right:
                     pv=it["pct"]*100
                     with cols[ci]:
                         st.markdown(
-                            f'<div style="background:{it["hex"]};height:48px;'
-                            f'border:1px solid rgba(0,0,0,.06);margin-bottom:5px;"></div>'
-                            f'<div style="font-size:.63rem;text-align:center;font-weight:500;'
-                            f'color:#6B6860;line-height:1.3;">{pv:.1f}%</div>'
-                            f'<div style="font-size:.58rem;text-align:center;color:#ADAAA3;'
+                            f'<div style="background:{it["hex"]};height:24px;'
+                            f'border:1px solid rgba(0,0,0,.08);margin-bottom:4px;"></div>'
+                            f'<div style="font-size:.65rem;text-align:center;font-weight:600;'
+                            f'color:var(--t2);line-height:1.2;">{pv:.1f}%</div>'
+                            f'<div style="font-size:.58rem;text-align:center;color:var(--t3);'
                             f'font-family:\'Google Sans Flex\',sans-serif;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;">{it["hex"]}</div>',
                             unsafe_allow_html=True
                         )
@@ -530,12 +541,12 @@ with col_right:
         for idx,g in enumerate(gs):
             render_group(g)
             if idx<len(gs)-1:
-                st.markdown('<div style="border-top:1px solid #EDEAE4;margin-bottom:1.25rem;"></div>',
+                st.markdown('<div style="border-top:1px solid var(--line);margin-bottom:1.25rem;"></div>',
                             unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid #E8E5DF;padding:5rem 2rem;
+        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:5rem 2rem;
         text-align:center;margin-top:2rem;">
-        <div style="font-size:1.4rem;font-weight:300;color:#D4D0C8;">Chưa có ảnh để phân tích</div>
-        <div style="font-size:.8rem;color:#E0DDD7;margin-top:.5rem;">Tải ảnh lên ở cột bên trái để bắt đầu</div>
+        <div style="font-size:1.4rem;font-weight:300;color:var(--t3);">Chưa có ảnh để phân tích</div>
+        <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh lên ở cột bên trái để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
