@@ -153,33 +153,26 @@ def get_color_name(rgb):
     if 285<=d<320: return "Tím"
     return "Khác"
 
-def fam(n):
-    if n in ["Đỏ","Hồng"]: return "đỏ"
-    if n in ["Cam","Nâu","Kem"]: return "cam"
-    if n in ["Xanh dương","Xanh tím"]: return "xanh_tím"
-    return n
-
 def sort_hue(lst):
     if not lst: return []
-    g = {}
-    for c in lst: g.setdefault(fam(c["name"]), []).append(c)
-    for k in g: g[k].sort(key=lambda x: x["pct"], reverse=True)
-    out = []
-    for _, v in sorted(g.items(), key=lambda x: x[1][0]["pct"], reverse=True):
-        out.extend(v)
-    return out
+    # Sắp xếp mượt mà theo dải sắc độ dốc từ Hue -> Saturation -> Lightness
+    return sorted(lst, key=lambda x: (x["h"], x["s"], x["l"]))
 
 def analyze(rgb, pct):
     t = tuple(int(x) for x in rgb)
     r,g,b = [x/255 for x in t]
     h,l,s = colorsys.rgb_to_hls(r,g,b)
     return dict(rgb=t, hex=rgb_to_hex(t), pct=pct, h=h, l=l, s=s,
-                is_neutral=(s<0.22 or l<0.15 or l>0.88), name=get_color_name(t))
+                is_neutral=(s<0.18 or l<0.15 or l>0.88), name=get_color_name(t))
 
 def wavg(grp):
     if not grp: return (128,128,128)
-    tot = sum(i["pct"] for i in grp)
-    return tuple(int(sum(i["rgb"][j]*i["pct"] for i in grp)/tot) for j in range(3))
+    # Lấy 3 màu có diện tích đóng góp cao nhất trong nhóm để tính màu đại diện sắc nét nhất
+    sorted_grp = sorted(grp, key=lambda x: x["pct"], reverse=True)
+    top_colors = sorted_grp[:3]
+    tot = sum(i["pct"] for i in top_colors)
+    if tot == 0: return top_colors[0]["rgb"]
+    return tuple(int(sum(i["rgb"][j]*i["pct"] for i in top_colors)/tot) for j in range(3))
 
 def bar_png(items, w=1400, h=100):
     img = Image.new("RGB",(w,h),(245,245,247))
@@ -258,14 +251,14 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""<p style="font-size:0.84rem;color:var(--t2);line-height:1.65;margin-bottom:1rem;">
     Phối hợp màu theo tỷ lệ vàng <strong style="color:var(--t1);">60 – 30 – 10</strong>
-    để đạt hiệu quả thị giác tốt nhất.
+    để đạt hiệu quả thị giác tốt nhất. Phân định nhóm nghiêm ngặt dựa trên diện tích hiển thị thực tế của từng xu hướng tông màu.
     </p>""", unsafe_allow_html=True)
 
-    with st.expander("Màu Chính — Dominant"):
+    with st.expander("Màu Chính — Dominant (15 màu)"):
         st.write("Chiếm diện tích lớn nhất. Thiết lập tone và cảm xúc tổng thể cho tác phẩm.")
-    with st.expander("Màu Phụ — Secondary"):
+    with st.expander("Màu Phụ — Secondary (15 màu)"):
         st.write("Hỗ trợ màu chính, tạo chiều sâu và cân bằng thị giác.")
-    with st.expander("Màu Nhấn — Accent"):
+    with st.expander("Màu Nhấn — Accent (15 màu)"):
         st.write("Tương phản cao, dùng cho chi tiết nhỏ. Thu hút ánh nhìn, làm nổi bật điểm quan trọng.")
 
     st.markdown("---")
@@ -338,37 +331,69 @@ with col_left:
         image = st.session_state["clipboard_image"]
 
     if image:
-        # K-means
+        # K-means clustering with 45 colors
         arr = np.array(image.resize((120,120)))
         px  = arr[:,:,:3].reshape(-1,3) if arr.shape[-1]==4 else arr.reshape(-1,3)
-        km  = KMeans(n_clusters=20, random_state=42, n_init=10)
+        km  = KMeans(n_clusters=45, random_state=42, n_init=10)
         lbs = km.fit_predict(px)
         clr = km.cluster_centers_.astype(int)
-        pct = np.bincount(lbs, minlength=20)/len(px)
-        dl  = [analyze(clr[i], pct[i]) for i in range(20)]
+        pct = np.bincount(lbs, minlength=45)/len(px)
+        dl  = [analyze(clr[i], pct[i]) for i in range(45)]
 
-        # Smart split: Dominant · Accent · Secondary
-        by_pct = sorted(dl, key=lambda x:x["pct"], reverse=True)
-        dom_g  = []
-        cum    = 0.0
-        for c in by_pct:
-            if len(dom_g)<1 or (cum<0.55 and len(dom_g)<4):
-                dom_g.append(c); cum+=c["pct"]
-        dom_hue = sum(c["h"]*c["pct"] for c in dom_g)/sum(c["pct"] for c in dom_g)
-        rest = [c for c in by_pct if c not in dom_g]
-        scored = []
-        for c in rest:
-            vib = c["s"]*(1-abs(2*c["l"]-1))
-            hc  = min(abs(c["h"]-dom_hue), 1-abs(c["h"]-dom_hue))
-            scored.append((vib*(1+3.5*hc)/(c["pct"]+.01), c))
-        scored.sort(key=lambda x:x[0], reverse=True)
-        acc_g=[]; acp=0.0
-        for sc,c in scored:
-            if c["s"]>=.15 and c["pct"]<.06 and acp+c["pct"]<=.12 and len(acc_g)<5:
-                acc_g.append(c); acp+=c["pct"]
-        if not acc_g: acc_g=sorted(rest, key=lambda x:x["pct"])[:3]
-        sec_g=[c for c in rest if c not in acc_g]
+        # ─── ĐO LƯỜNG VÀ PHÂN NHÓM THEO PHONG CÁCH TINEYE ───
+        chromatics = []
+        neutrals = []
+        for c in dl:
+            if c["is_neutral"]:
+                neutrals.append(c)
+            else:
+                chromatics.append(c)
 
+        # Tránh đứt gãy Hue của sắc đỏ/hồng ở ranh giới 0.0 - 1.0 bằng cách dịch chuyển góc xoay vòng tròn
+        if chromatics:
+            hues = [c["h"] for c in chromatics]
+            sorted_hues = sorted(hues)
+            gaps = []
+            for i in range(len(sorted_hues) - 1):
+                gaps.append((sorted_hues[i+1] - sorted_hues[i], sorted_hues[i]))
+            gaps.append((1.0 - sorted_hues[-1] + sorted_hues[0], sorted_hues[-1]))
+            
+            largest_gap, gap_start = max(gaps, key=lambda x: x[0])
+            shift_point = (gap_start + largest_gap / 2.0) % 1.0
+            
+            sorted_chromatics = sorted(chromatics, key=lambda x: (x["h"] - shift_point) % 1.0)
+        else:
+            sorted_chromatics = []
+
+        # Nhóm màu trung tính sắp xếp theo độ sáng tăng dần
+        sorted_neutrals = sorted(neutrals, key=lambda x: x["l"])
+
+        # Ghép chuỗi xu hướng màu liên tục (Chromatic sếp kề Hue + Neutrals xếp kề Lightness)
+        by_trend = sorted_chromatics + sorted_neutrals
+        
+        # Chia đều chuỗi xu hướng màu này thành 3 nhóm có kích thước bằng nhau (15 màu)
+        g1 = by_trend[0:15]
+        g2 = by_trend[15:30]
+        g3 = by_trend[30:45]
+        
+        # Đo lường tổng diện tích thực tế (%) của từng dải xu hướng màu
+        p1 = sum(c["pct"] for c in g1)
+        p2 = sum(c["pct"] for c in g2)
+        p3 = sum(c["pct"] for c in g3)
+        
+        # Định nghĩa động vai trò của xu hướng dựa trên diện tích đo được
+        temp_groups = [
+            {"items": g1, "pct": p1},
+            {"items": g2, "pct": p2},
+            {"items": g3, "pct": p3}
+        ]
+        temp_groups.sort(key=lambda x: x["pct"], reverse=True)
+        
+        dom_g = temp_groups[0]["items"]
+        sec_g = temp_groups[1]["items"]
+        acc_g = temp_groups[2]["items"]
+
+        # Sắp xếp mượt mà dải swatch hiển thị
         dom = sort_hue(dom_g)
         sec = sort_hue(sec_g)
         acc = sort_hue(acc_g)
@@ -415,11 +440,11 @@ with col_right:
         ad=wavg(dom); as_=wavg(sec); aa=wavg(acc)
 
         groups=[
-            {"name":"Màu Chính","sub":"Chủ đạo","key":"dom",
+            {"name":"Màu Chính","sub":"Chủ đạo (15 màu)","key":"dom",
              "items":dom,"total_pct":pd,"avg_rgb":ad,"avg_hex":rgb_to_hex(ad),"label_short":"Chính"},
-            {"name":"Màu Phụ","sub":"Trung tính","key":"sec",
+            {"name":"Màu Phụ","sub":"Chuyển tiếp xu hướng (15 màu)","key":"sec",
              "items":sec,"total_pct":ps,"avg_rgb":as_,"avg_hex":rgb_to_hex(as_),"label_short":"Phụ"},
-            {"name":"Màu Nhấn","sub":"Điểm nhấn","key":"acc",
+            {"name":"Màu Nhấn","sub":"Điểm nhấn (15 màu)","key":"acc",
              "items":acc,"total_pct":pa,"avg_rgb":aa,"avg_hex":rgb_to_hex(aa),"label_short":"Nhấn"},
         ]
         gs = sorted(groups, key=lambda x:x["total_pct"], reverse=True)
@@ -531,7 +556,7 @@ with col_right:
 
         dcol1, dcol2, dcol3 = st.columns([4, 1.2, 1.2])
         with dcol1:
-            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 20 sắc độ</div>',
+            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 45 sắc độ</div>',
                         unsafe_allow_html=True)
         with dcol2:
             st.download_button("↓ Tải dải màu", data=bar_png(master),
@@ -592,8 +617,8 @@ with col_right:
             bh+='</div>'
             st.markdown(bh, unsafe_allow_html=True)
 
-            # Swatch tiles — 8 per row (compacted for secondary hierarchy)
-            CPR=8
+            # Swatch tiles — 5 per row (compacted for symmetrical 3x5 layout)
+            CPR=5
             for ri in range(0,len(items),CPR):
                 chunk=items[ri:ri+CPR]
                 cols=st.columns(CPR)
