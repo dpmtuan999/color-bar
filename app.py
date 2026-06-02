@@ -12,185 +12,164 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
 RESAMPLE = Image.Resampling.LANCZOS if hasattr(Image, "Resampling") else Image.ANTIALIAS
 
-# ─── CSS ──────────────────────────────────────────────────────────────────────
+# ─── HỆ THỐNG GIAO DIỆN CHUYÊN NGHIỆP (CSS STYLE) ────────────────=============
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..144,100..900&display=swap');
 
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-/* Force Google Sans Flex font globally */
-html, body, [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, 
-p, h1, h2, h3, h4, h5, h6, li, label, table, td, th, summary, [data-testid="stExpander"] summary {
+html, body, [data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] span,
+p, h1, h2, h3, h4, h5, h6, li, label, table, td, th,
+summary, [data-testid="stExpander"] summary,
+button div p, button div,
+.stDownloadButton button,
+[data-testid="stSidebar"] * {
     font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
-button div p, button div, .stDownloadButton button, [data-testid="stSidebar"] * {
-    font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-}
 
-/* Minimalist Black & White / Grayscale Palette */
 :root {
-    --bg:      #F5F5F7;  /* Cool light grey */
-    --surface: #FFFFFF;  /* White */
-    --line:    #E5E5EA;  /* Muted cool grey border */
+    --bg:      #F5F5F7;
+    --surface: #FFFFFF;
+    --line:    #E5E5EA;
     --line-s:  #F2F2F7;
-    --t1:      #1D1D1F;  /* Deep rich black */
-    --t2:      #515154;  /* Deep charcoal gray */
-    --t3:      #86868B;  /* Muted gray */
-    --warm:    #1D1D1F;  /* Black accent */
-    --warm-bg: #E8E8ED;  /* Hover gray background */
+    --t1:      #1D1D1F;
+    --t2:      #515154;
+    --t3:      #86868B;
+    --warm:    #1D1D1F;
 }
 
 .stApp                    { background: var(--bg) !important; }
 #MainMenu, footer, header { visibility: hidden !important; }
 .block-container          { padding: 2.5rem 2.75rem 5rem !important; max-width: 1400px !important; }
 
-/* Sidebar */
 [data-testid="stSidebar"]            { background: var(--surface) !important; border-right: 1px solid var(--line) !important; box-shadow: none !important; }
 [data-testid="stSidebar"] > div      { padding: 2.25rem 1.75rem !important; }
 
-/* Remove Streamlit default image styling decorations */
 [data-testid="stImage"],
 [data-testid="stImage"] > *,
 [data-testid="stImage"] img,
-figure, figure img                   { border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; display: block !important; line-height: 0 !important; }
+figure, figure img { border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; display: block !important; line-height: 0 !important; }
 
-/* Clean File Uploader */
 [data-testid="stFileUploader"]       { background: var(--surface) !important; border: 1px dashed var(--line) !important; border-radius: 4px !important; padding: 1.75rem !important; }
 [data-testid="stFileUploader"]:hover { border-color: var(--warm) !important; }
-[data-testid="stFileUploadDropzone"] p {
-    color: var(--t2) !important;
-    font-family: "Google Sans Flex", sans-serif !important;
-}
 
-/* Download & Regular Buttons - Monochrome minimalist button with 32px height */
 .stDownloadButton, .stButton {
     display: flex !important;
-    align-items: center !important;
+    align-items: stretch !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
 }
-.stDownloadButton > button, .stButton > button { 
-    background: var(--surface) !important; 
-    border: 1px solid var(--line) !important; 
-    border-radius: 4px !important; 
-    color: var(--t1) !important; 
-    font-size: 0.72rem !important; 
-    font-weight: 600 !important; 
-    padding: 0 10px !important; 
-    width: 100% !important; 
-    height: 32px !important; 
-    min-height: 32px !important;
+.stDownloadButton > button, .stButton > button {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 6px !important;
+    color: var(--t2) !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    padding: 0 10px !important;
+    width: 100% !important;
+    height: 34px !important;
+    min-height: 34px !important;
     line-height: 1 !important;
-    box-shadow: none !important; 
-    transition: all .2s cubic-bezier(0.16, 1, 0.3, 1) !important; 
+    box-shadow: none !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    transition: all .2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
 }
-.stDownloadButton > button:hover, .stButton > button:hover { 
-    border-color: var(--t1) !important; 
-    color: var(--surface) !important; 
-    background: var(--t1) !important; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; 
+.stDownloadButton > button:hover, .stButton > button:hover {
+    border-color: var(--t1) !important;
+    color: var(--surface) !important;
+    background: var(--t1) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+/* Fix column gap và alignment cho hàng nút */
+[data-testid="column"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
 }
 
-/* Expanders */
-[data-testid="stExpander"]           { background: transparent !important; border: none !important; border-bottom: 1px solid var(--line-s) !important; border-radius: 0 !important; box-shadow: none !important; }
-[data-testid="stExpander"] summary   { color: var(--t2) !important; font-size: 0.83rem !important; font-weight: 500 !important; padding: 0.65rem 0 !important; }
-[data-testid="stExpander"] > div     { padding: 0.25rem 0 0.8rem !important; }
-
-/* HR */
 hr { border: none !important; border-top: 1px solid var(--line) !important; margin: 1.75rem 0 !important; }
 
-/* Global text styling */
 h1                          { font-size: 2.25rem !important; font-weight: 700 !important; letter-spacing: -0.03em !important; color: var(--t1) !important; line-height: 1.1 !important; margin: 0 !important; }
 p, li, label, td, th, span { color: var(--t2) !important; font-size: 0.875rem !important; line-height: 1.6 !important; }
-code                        { font-family: "SF Mono", "Courier New", monospace !important; background: transparent !important; color: var(--t3) !important; font-size: 0.68rem !important; border: none !important; padding: 0 !important; }
 
-/* Misc overrides */
-[data-testid="column"]              { padding: 0 0.35rem !important; }
-::-webkit-scrollbar                 { width: 4px; height: 4px; }
-::-webkit-scrollbar-thumb           { background: var(--line); border-radius: 2px; }
+[data-testid="column"]  { padding: 0 0.35rem !important; }
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ─── HELPERS ──────────────────────────────────────────────────────────────────
-def rgb_to_hex(rgb): return f"#{rgb[0]:02X}{rgb[1]:02X}{rgb[2]:02X}"
+# ─── HÀM HỖ TRỢ XỬ LÝ MÀU SẮC ─────────────────────────────────────────────────
+def rgb_to_hex(rgb):
+    return f"#{int(rgb[0]):02X}{int(rgb[1]):02X}{int(rgb[2]):02X}"
 
 def img_to_b64(img, fmt="JPEG"):
     buf = io.BytesIO()
+    if fmt == "JPEG" and img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
     img.save(buf, format=fmt)
     return base64.b64encode(buf.getvalue()).decode()
 
-def lum(rgb): return 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2]
-def on_color(rgb): return "#1D1D1F" if lum(rgb) > 155 else "#FFFFFF"
+def lum(rgb):
+    return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
 
-def get_color_name(rgb):
-    r,g,b = [x/255 for x in rgb]
-    h,l,s = colorsys.rgb_to_hls(r,g,b)
-    d = h*360
-    if l<0.12: return "Đen"
-    if l>0.88 and s<0.15: return "Trắng"
-    if s<0.12: return "Xám" if l>0.5 else "Xám tối"
-    if 30<=d<60 and 0.1<=s<0.35 and l>0.65: return "Kem"
-    if 10<=d<45 and l<0.45: return "Nâu"
-    if 320<=d<350 and l>0.5: return "Hồng"
-    if d<15 or d>=345: return "Đỏ"
-    if 15<=d<45: return "Cam"
-    if 45<=d<75: return "Vàng"
-    if 75<=d<160: return "Xanh lá"
-    if 160<=d<195: return "Xanh ngọc"
-    if 195<=d<250: return "Xanh dương"
-    if 250<=d<285: return "Xanh tím"
-    if 285<=d<320: return "Tím"
-    return "Khác"
-
-def sort_hue(lst):
-    if not lst: return []
-    # Sắp xếp mượt mà theo dải sắc độ dốc từ Hue -> Saturation -> Lightness
-    return sorted(lst, key=lambda x: (x["h"], x["s"], x["l"]))
-
-def analyze(rgb, pct):
-    t = tuple(int(x) for x in rgb)
-    r,g,b = [x/255 for x in t]
-    h,l,s = colorsys.rgb_to_hls(r,g,b)
-    return dict(rgb=t, hex=rgb_to_hex(t), pct=pct, h=h, l=l, s=s,
-                is_neutral=(s<0.18 or l<0.15 or l>0.88), name=get_color_name(t))
+def on_color(rgb):
+    return "#1D1D1F" if lum(rgb) > 155 else "#FFFFFF"
 
 def wavg(grp):
-    if not grp: return (128,128,128)
-    # Lấy 3 màu có diện tích đóng góp cao nhất trong nhóm để tính màu đại diện sắc nét nhất
-    sorted_grp = sorted(grp, key=lambda x: x["pct"], reverse=True)
-    top_colors = sorted_grp[:3]
-    tot = sum(i["pct"] for i in top_colors)
-    if tot == 0: return top_colors[0]["rgb"]
-    return tuple(int(sum(i["rgb"][j]*i["pct"] for i in top_colors)/tot) for j in range(3))
+    if not grp: return (128, 128, 128)
+    tot = sum(i["pct"] for i in grp)
+    if tot == 0: return grp[0]["rgb"]
+    return tuple(int(sum(i["rgb"][j] * i["pct"] for i in grp) / tot) for j in range(3))
 
-def bar_png(items, w=1400, h=100):
-    img = Image.new("RGB",(w,h),(245,245,247))
-    d = ImageDraw.Draw(img); x=0
+
+# ─── HÀM TẠO ẢNH XUẤT FILE (DOWNLOAD) ─────────────────────────────────────────
+def bar_png(items, w=1400, h=60):
+    img = Image.new("RGB", (w, h), (245, 245, 247))
+    d = ImageDraw.Draw(img)
+    x = 0
     tot = sum(i["pct"] for i in items)
+    if tot == 0: return io.BytesIO().getvalue()
     for it in items:
-        bw=int(it["pct"]/tot*w); d.rectangle([x,0,x+bw,h],fill=it["rgb"]); x+=bw
-    if x<w: d.rectangle([x,0,w,h],fill=items[-1]["rgb"])
-    buf=io.BytesIO(); img.save(buf,"PNG"); return buf.getvalue()
+        bw = int(it["pct"] / tot * w)
+        if bw > 0:
+            d.rectangle([x, 0, x + bw, h], fill=it["rgb"])
+            x += bw
+    if x < w and items:
+        d.rectangle([x, 0, w, h], fill=items[-1]["rgb"])
+    buf = io.BytesIO()
+    img.save(buf, "PNG")
+    return buf.getvalue()
 
-def macro_png(grps, w=1400, h=100):
-    img = Image.new("RGB",(w,h),(245,245,247))
-    d = ImageDraw.Draw(img); x=0
-    for g in grps:
-        if g["total_pct"]>0:
-            bw=int(g["total_pct"]/100*w); d.rectangle([x,0,x+bw,h],fill=g["avg_rgb"]); x+=bw
-    if x<w: d.rectangle([x,0,w,h],fill=grps[-1]["avg_rgb"])
-    buf=io.BytesIO(); img.save(buf,"PNG"); return buf.getvalue()
+def macro_png_tineye(ordered_macro_list, w=1400, h=80):
+    img = Image.new("RGB", (w, h), (245, 245, 247))
+    d = ImageDraw.Draw(img)
+    x = 0
+    tot = sum(f["pct"] for f in ordered_macro_list)
+    if tot == 0: return io.BytesIO().getvalue()
+    for f in ordered_macro_list:
+        bw = int(f["pct"] / tot * w)
+        if bw > 0:
+            d.rectangle([x, 0, x + bw, h], fill=f["macro"]["rgb"])
+            x += bw
+    if x < w and ordered_macro_list:
+        d.rectangle([x, 0, w, h], fill=ordered_macro_list[-1]["macro"]["rgb"])
+    buf = io.BytesIO()
+    img.save(buf, "PNG")
+    return buf.getvalue()
 
 def copy_bytes_to_clipboard(png_bytes):
     try:
@@ -200,451 +179,438 @@ def copy_bytes_to_clipboard(png_bytes):
             f.write(png_bytes)
         script = f'set the clipboard to (read (POSIX file "{temp_path}") as «class PNGf»)'
         res = subprocess.run(["osascript", "-e", script], capture_output=True)
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
+        if os.path.exists(temp_path): os.remove(temp_path)
         return res.returncode == 0
     except Exception:
         return False
 
 @st.cache_data
 def wheel_base(size=1200):
-    x=np.linspace(-1,1,size); y=np.linspace(-1,1,size)
-    xv,yv=np.meshgrid(x,y); r=np.sqrt(xv**2+yv**2); theta=np.arctan2(yv,xv)
-    h=(theta+np.pi)/(2*np.pi); s=np.clip(r,0,1); v=np.ones_like(r)
-    h6=h*6; i=h6.astype(int); f=h6-i
-    p=v*(1-s); q=v*(1-s*f); t=v*(1-s*(1-f))
-    rgb=np.zeros((size,size,3),dtype=np.uint8)
-    for k,(ri,gi,bi) in enumerate([(v,t,p),(q,v,p),(p,v,t),(p,q,v),(t,p,v),(v,p,q)]):
-        idx=(i%6==k); rgb[idx]=np.stack([ri[idx],gi[idx],bi[idx]],axis=-1)*255
-    rgba=np.zeros((size,size,4),dtype=np.uint8)
-    rgba[:,:,:3]=rgb; rgba[:,:,3]=(r<=1).astype(np.uint8)*255
-    return Image.fromarray(rgba,"RGBA")
+    x = np.linspace(-1, 1, size)
+    y = np.linspace(-1, 1, size)
+    xv, yv = np.meshgrid(x, y)
+    r = np.sqrt(xv**2 + yv**2)
+    theta = np.arctan2(yv, xv)
+    h = (theta + np.pi) / (2 * np.pi)
+    s = np.clip(r, 0, 1)
+    v = np.ones_like(r)
+    h6 = h * 6; i = h6.astype(int); f = h6 - i
+    p = v * (1 - s); q = v * (1 - s * f); t = v * (1 - s * (1 - f))
+    rgb = np.zeros((size, size, 3), dtype=np.uint8)
+    for k, (ri, gi, bi) in enumerate([(v,t,p),(q,v,p),(p,v,t),(p,q,v),(t,p,v),(v,p,q)]):
+        idx = (i % 6 == k)
+        rgb[idx] = np.stack([ri[idx], gi[idx], bi[idx]], axis=-1) * 255
+    rgba = np.zeros((size, size, 4), dtype=np.uint8)
+    rgba[:, :, :3] = rgb
+    rgba[:, :, 3] = (r <= 1).astype(np.uint8) * 255
+    return Image.fromarray(rgba, "RGBA")
 
 def make_wheel(pts, size=1200, out=320):
-    wimg=wheel_base(size)
-    bg=Image.new("RGBA",(size,size),(245,245,247,255))
-    bg.paste(wimg,(0,0),wimg); wimg=bg
-    d=ImageDraw.Draw(wimg); cx=cy=size/2; mr=(size/2)*.93; sc=size/800
-    ring=int(19*sc); dot=int(13*sc)
-    for it in sorted(pts,key=lambda x:x["pct"]):
-        rc,gc,bc=it["rgb"]
-        h,s,_=colorsys.rgb_to_hsv(rc/255,gc/255,bc/255)
-        ang=h*2*np.pi-np.pi
-        x=cx+s*mr*np.cos(ang); y=cy+s*mr*np.sin(ang)
-        d.ellipse([x-ring,y-ring,x+ring,y+ring],fill=(255,255,255,240))
-        d.ellipse([x-dot,y-dot,x+dot,y+dot],fill=(rc,gc,bc,255))
-    return wimg.resize((out,out),resample=RESAMPLE)
+    wimg = wheel_base(size)
+    bg = Image.new("RGBA", (size, size), (245, 245, 247, 255))
+    bg.paste(wimg, (0, 0), wimg)
+    wimg = bg
+    d = ImageDraw.Draw(wimg)
+    cx = cy = size / 2
+    mr = (size / 2) * 0.93
+    sc = size / 800
+    ring = int(19 * sc)
+    dot  = int(13 * sc)
+    for it in sorted(pts, key=lambda x: x["pct"]):
+        rc, gc, bc = it["rgb"]
+        h, s, _ = colorsys.rgb_to_hsv(rc / 255, gc / 255, bc / 255)
+        ang = h * 2 * np.pi - np.pi
+        x = cx + s * mr * np.cos(ang)
+        y = cy + s * mr * np.sin(ang)
+        d.ellipse([x-ring, y-ring, x+ring, y+ring], fill=(255, 255, 255, 240))
+        d.ellipse([x-dot,  y-dot,  x+dot,  y+dot],  fill=(rc, gc, bc, 255))
+    return wimg.resize((out, out), resample=RESAMPLE)
 
 
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
     <div style="margin-bottom:2rem;">
-        <div style="font-family: 'Google Sans Flex', sans-serif; font-size:1.35rem;font-weight:700;color:#1D1D1F;letter-spacing:-0.025em;line-height:1.15;">
-            Beyond<br><span style="color:#000000;font-weight:800;">Photography</span>
+        <div style="font-family:'Google Sans Flex',sans-serif;font-size:1.35rem;font-weight:700;
+                    color:#1D1D1F;letter-spacing:-0.025em;line-height:1.15;">
+            Beyond<br><span style="color:#000;font-weight:800;">Photography</span>
         </div>
         <div style="margin-top:0.4rem;font-size:0.66rem;font-weight:600;letter-spacing:0.15em;
                     text-transform:uppercase;color:#86868B;">Color Analysis System</div>
     </div>
     """, unsafe_allow_html=True)
-
     st.markdown("---")
     st.markdown("""<p style="font-size:0.84rem;color:var(--t2);line-height:1.65;margin-bottom:1rem;">
-    Phối hợp màu theo tỷ lệ vàng <strong style="color:var(--t1);">60 – 30 – 10</strong>
-    để đạt hiệu quả thị giác tốt nhất. Phân định nhóm nghiêm ngặt dựa trên diện tích hiển thị thực tế của từng xu hướng tông màu.
+    Hệ thống phân tích cấu trúc diện tích màu, tự động bóc tách vùng màu trung tính và phân hạng dải màu mượt mà.
     </p>""", unsafe_allow_html=True)
 
-    with st.expander("Màu Chính — Dominant (15 màu)"):
-        st.write("Chiếm diện tích lớn nhất. Thiết lập tone và cảm xúc tổng thể cho tác phẩm.")
-    with st.expander("Màu Phụ — Secondary (15 màu)"):
-        st.write("Hỗ trợ màu chính, tạo chiều sâu và cân bằng thị giác.")
-    with st.expander("Màu Nhấn — Accent (15 màu)"):
-        st.write("Tương phản cao, dùng cho chi tiết nhỏ. Thu hút ánh nhìn, làm nổi bật điểm quan trọng.")
 
-    st.markdown("---")
-    st.markdown("""
-    <div style="margin-bottom:.5rem;font-size:0.64rem;font-weight:600;letter-spacing:.13em;
-                text-transform:uppercase;color:var(--t3);">Tỷ lệ tham chiếu</div>
-    <div style="display:flex;flex-direction:column;gap:9px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:60%;height:3px;background:var(--t1);"></div>
-            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">60% Chính</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:30%;height:3px;background:var(--t3);"></div>
-            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">30% Phụ</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:10%;height:3px;background:var(--line);"></div>
-            <span style="font-size:0.75rem;color:var(--t2);font-weight:500;">10% Nhấn</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ─── HEADER ───────────────────────────────────────────────────────────────────
+# ─── TIÊU ĐỀ CHÍNH APP & KHỞI TẠO BIẾN CỘT TOÀN CỤC ───────────────────────────
 st.markdown("""
 <h1>Beyond Photography</h1>
 <div style="margin-top:.35rem;font-size:.68rem;font-weight:600;letter-spacing:.2em;
-            text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc</div>
+            text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc cấu trúc thị giác</div>
 """, unsafe_allow_html=True)
 st.markdown("---")
 
-col_left, col_right = st.columns([1, 2.2], gap="large")
-dom = sec = acc = []
+col_left, col_right = st.columns([1.1, 2.1], gap="large")
 
-# ─── LEFT ─────────────────────────────────────────────────────────────────────
+dom = []
+sec = []
+acc = []
+ordered_macro_list = []
+pd = ps = pa = 0
+ad = as_ = aa = (128,128,128)
+
+# ─── CỘT TRÁI: INPUT & THANH TỶ LỆ ĐỨNG FLEXIBLE THEO ẢNH GỐC ────────────────
 with col_left:
-    st.markdown("<p style='font-size: 0.8rem; font-weight: 600; color: var(--t2); margin-bottom: 0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
-    up = st.file_uploader("upload", type=["jpg","jpeg","png"], label_visibility="collapsed")
-    
-    st.markdown("<div style='text-align: center; margin: 0.25rem 0; font-size: 0.72rem; color: var(--t3);'>hoặc</div>", unsafe_allow_html=True)
-    
+    st.markdown("<p style='font-size:0.8rem;font-weight:600;color:var(--t2);margin-bottom:0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
+    up = st.file_uploader("upload", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
+
+    st.markdown("<div style='text-align:center;margin:0.25rem 0;font-size:0.72rem;color:var(--t3);'>hoặc</div>", unsafe_allow_html=True)
+
     if st.button("📋 Dán ảnh từ Clipboard", use_container_width=True):
         try:
             from PIL import ImageGrab
             clipboard_image = ImageGrab.grabclipboard()
             if clipboard_image is not None:
                 if isinstance(clipboard_image, list) and len(clipboard_image) > 0:
-                    first_file = clipboard_image[0]
-                    try:
-                        st.session_state["clipboard_image"] = Image.open(first_file)
-                        st.toast("Đã dán ảnh từ tệp tin Clipboard!", icon="📋")
-                    except Exception:
-                        st.warning("Tệp tin trong clipboard không phải là hình ảnh hợp lệ.")
+                    st.session_state["clipboard_image"] = Image.open(clipboard_image[0])
                 else:
                     st.session_state["clipboard_image"] = clipboard_image
-                    st.toast("Đã dán ảnh từ Clipboard thành công!", icon="📋")
+                st.toast("Đã dán ảnh từ Clipboard thành công!", icon="📋")
             else:
-                st.warning("Không tìm thấy hình ảnh nào trong Clipboard. Hãy copy ảnh trước.")
+                st.warning("Không tìm thấy hình ảnh trong Clipboard.")
         except Exception as e:
             st.error(f"Không thể đọc clipboard: {e}")
 
-    st.markdown("<div style='font-size:.7rem;color:var(--t3);text-align:center;margin-top:0.4rem;'>JPG · PNG</div>", unsafe_allow_html=True)
-
     image = None
-    if up: 
+    if up:
         image = Image.open(up)
-        if "clipboard_image" in st.session_state:
-            del st.session_state["clipboard_image"]
+        if "clipboard_image" in st.session_state: del st.session_state["clipboard_image"]
     elif "clipboard_image" in st.session_state:
         image = st.session_state["clipboard_image"]
 
     if image:
-        # K-means clustering with 45 colors
-        arr = np.array(image.resize((120,120)))
-        px  = arr[:,:,:3].reshape(-1,3) if arr.shape[-1]==4 else arr.reshape(-1,3)
-        km  = KMeans(n_clusters=45, random_state=42, n_init=10)
-        lbs = km.fit_predict(px)
-        clr = km.cluster_centers_.astype(int)
-        pct = np.bincount(lbs, minlength=45)/len(px)
-        dl  = [analyze(clr[i], pct[i]) for i in range(45)]
+        work = image.convert("RGB")
+        arr  = np.array(work.resize((300, 300), RESAMPLE))
+        px   = arr.reshape(-1, 3)
 
-        # ─── ĐO LƯỜNG VÀ PHÂN NHÓM THEO PHONG CÁCH TINEYE ───
-        chromatics = []
-        neutrals = []
-        for c in dl:
-            if c["is_neutral"]:
-                neutrals.append(c)
+        # Bước 1: Tìm 40 màu chi tiết gốc bằng K-Means
+        km_detail = KMeans(n_clusters=40, random_state=42, n_init=10)
+        lbs_detail = km_detail.fit_predict(px)
+        clr_detail = km_detail.cluster_centers_.astype(int)
+        cnt_detail = np.bincount(lbs_detail, minlength=40)
+        pct_detail = cnt_detail / cnt_detail.sum()
+
+        raw_micro_colors = []
+        for i in range(40):
+            if pct_detail[i] == 0: continue
+            rgb_t = tuple(int(x) for x in clr_detail[i])
+            r, g, b = [x / 255.0 for x in rgb_t]
+            h, l, s = colorsys.rgb_to_hls(r, g, b)
+            
+            is_neutral = (s < 0.16 or l < 0.13 or l > 0.88)
+            if is_neutral:
+                if l < 0.25: bin_id = 100
+                elif l > 0.78: bin_id = 101
+                else: bin_id = 102
             else:
-                chromatics.append(c)
+                bin_id = int(h * 12) % 12
+                
+            raw_micro_colors.append({
+                "rgb": rgb_t, "hex": rgb_to_hex(rgb_t), "pct": pct_detail[i],
+                "h": h, "l": l, "s": s, "is_neutral": is_neutral, "bin_id": bin_id
+            })
 
-        # Tránh đứt gãy Hue của sắc đỏ/hồng ở ranh giới 0.0 - 1.0 bằng cách dịch chuyển góc xoay vòng tròn
-        if chromatics:
-            hues = [c["h"] for c in chromatics]
-            sorted_hues = sorted(hues)
-            gaps = []
-            for i in range(len(sorted_hues) - 1):
-                gaps.append((sorted_hues[i+1] - sorted_hues[i], sorted_hues[i]))
-            gaps.append((1.0 - sorted_hues[-1] + sorted_hues[0], sorted_hues[-1]))
+        # Bước 2: Bộ lọc gộp các sắc độ trùng lặp cận biên (Distance < 35)
+        micro_colors = []
+        raw_micro_colors.sort(key=lambda x: x["pct"], reverse=True)
+        
+        for r_mc in raw_micro_colors:
+            found_match = False
+            for m_mc in micro_colors:
+                dist = np.linalg.norm(np.array(r_mc["rgb"]) - np.array(m_mc["rgb"]))
+                if dist < 35 and r_mc["bin_id"] == m_mc["bin_id"]: 
+                    total_pct = m_mc["pct"] + r_mc["pct"]
+                    if total_pct > 0:
+                        avg_r = (m_mc["rgb"][0] * m_mc["pct"] + r_mc["rgb"][0] * r_mc["pct"]) / total_pct
+                        avg_g = (m_mc["rgb"][1] * m_mc["pct"] + r_mc["rgb"][1] * r_mc["pct"]) / total_pct
+                        avg_b = (m_mc["rgb"][2] * m_mc["pct"] + r_mc["rgb"][2] * r_mc["pct"]) / total_pct
+                        m_mc["rgb"] = (int(avg_r), int(avg_g), int(avg_b))
+                        m_mc["hex"] = rgb_to_hex(m_mc["rgb"])
+                    m_mc["pct"] = total_pct
+                    mr, mg, mb = [x / 255.0 for x in m_mc["rgb"]]
+                    m_mc["h"], m_mc["l"], m_mc["s"] = colorsys.rgb_to_hls(mr, mg, mb)
+                    found_match = True
+                    break
+            if not found_match:
+                micro_colors.append(r_mc)
+
+        # Phân chia các sắc độ vào túi Hue lớn
+        bin_groups = {}
+        for mc in micro_colors:
+            bid = mc["bin_id"]
+            if bid not in bin_groups: bin_groups[bid] = []
+            bin_groups[bid].append(mc)
+
+        families = []
+        for bid, items in bin_groups.items():
+            tot_pct = sum(it["pct"] for it in items)
+            avg_r = sum(it["rgb"][0] * it["pct"] for it in items) / tot_pct
+            avg_r = max(0, min(255, avg_r))
+            avg_g = sum(it["rgb"][1] * it["pct"] for it in items) / tot_pct
+            avg_g = max(0, min(255, avg_g))
+            avg_b = sum(it["rgb"][2] * it["pct"] for it in items) / tot_pct
+            avg_b = max(0, min(255, avg_b))
+            macro_rgb = (int(avg_r), int(avg_g), int(avg_b))
+            mr, mg, mb = [x / 255.0 for x in macro_rgb]
+            mh, ml, ms = colorsys.rgb_to_hls(mr, mg, mb)
             
-            largest_gap, gap_start = max(gaps, key=lambda x: x[0])
-            shift_point = (gap_start + largest_gap / 2.0) % 1.0
-            
-            sorted_chromatics = sorted(chromatics, key=lambda x: (x["h"] - shift_point) % 1.0)
-        else:
-            sorted_chromatics = []
+            families.append({
+                "bin_id": bid, "pct": tot_pct, "items": items,
+                "macro": {
+                    "rgb": macro_rgb, "hex": rgb_to_hex(macro_rgb), "pct": tot_pct,
+                    "h": mh, "l": ml, "s": ms, "is_neutral": items[0]["is_neutral"]
+                }
+            })
 
-        # Nhóm màu trung tính sắp xếp theo độ sáng tăng dần
-        sorted_neutrals = sorted(neutrals, key=lambda x: x["l"])
-
-        # Ghép chuỗi xu hướng màu liên tục (Chromatic sếp kề Hue + Neutrals xếp kề Lightness)
-        by_trend = sorted_chromatics + sorted_neutrals
+        # Phân nhóm ĐỘC QUYỀN Chính - Phụ - Nhấn không chồng chéo tỷ lệ %
+        families.sort(key=lambda x: x["pct"], reverse=True)
         
-        # Chia đều chuỗi xu hướng màu này thành 3 nhóm có kích thước bằng nhau (15 màu)
-        g1 = by_trend[0:15]
-        g2 = by_trend[15:30]
-        g3 = by_trend[30:45]
+        dom_families, sec_families, acc_families = [], [], []
+        current_sum = 0.0
+        for f in families:
+            if not dom_families:
+                dom_families.append(f)
+                current_sum += f["pct"] * 100
+            elif current_sum < 55.0:
+                dom_families.append(f)
+                current_sum += f["pct"] * 100
+            elif current_sum < 88.0:
+                sec_families.append(f)
+                current_sum += f["pct"] * 100
+            else:
+                acc_families.append(f)
+                current_sum += f["pct"] * 100
+
+        if not sec_families and acc_families: sec_families.append(acc_families.pop(0))
+        if not sec_families and len(dom_families) > 1: sec_families.append(dom_families.pop())
+        if not acc_families and len(sec_families) > 1: acc_families.append(sec_families.pop())
+
+        def smooth_sort_key(x):
+            return (x["is_neutral"], x["bin_id"], x["l"], x["s"])
+
+        dom_g = []
+        for f in dom_families: dom_g.extend(f["items"])
+        sec_g = []
+        for f in sec_families: sec_g.extend(f["items"])
+        acc_g = []
+        for f in acc_families: acc_g.extend(f["items"])
+
+        dom = sorted(dom_g, key=smooth_sort_key)
+        sec = sorted(sec_g, key=smooth_sort_key)
+        acc = sorted(acc_g, key=smooth_sort_key)
+
+        ordered_macro_list = []
+        for f in sorted(dom_families, key=lambda x: (x["macro"]["is_neutral"], x["bin_id"])):
+            f["macro"]["category"] = "Chính"
+            ordered_macro_list.append(f)
+        for f in sorted(sec_families, key=lambda x: (x["macro"]["is_neutral"], x["bin_id"])):
+            f["macro"]["category"] = "Phụ"
+            ordered_macro_list.append(f)
+        for f in sorted(acc_families, key=lambda x: (x["macro"]["is_neutral"], x["bin_id"])):
+            f["macro"]["category"] = "Nhấn"
+            ordered_macro_list.append(f)
+
+        pd = sum(f["pct"] for f in dom_families) * 100
+        ps = sum(f["pct"] for f in sec_families) * 100
+        pa = sum(f["pct"] for f in acc_families) * 100
+        ad = wavg(dom); as_ = wavg(sec); aa = wavg(acc)
+
+        # ── KHU VỰC HIỂN THỊ KIỂU SIDE-BY-SIDE ĐỐI XỨNG THEO ẢNH GỐC ──
+        st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
         
-        # Đo lường tổng diện tích thực tế (%) của từng dải xu hướng màu
-        p1 = sum(c["pct"] for c in g1)
-        p2 = sum(c["pct"] for c in g2)
-        p3 = sum(c["pct"] for c in g3)
+        # Tạo bản thumb chuẩn tỉ lệ cho ảnh gốc bên trái
+        thumb = work.copy()
+        thumb.thumbnail((500, 500), RESAMPLE)
+        img_b64 = img_to_b64(thumb)
         
-        # Định nghĩa động vai trò của xu hướng dựa trên diện tích đo được
-        temp_groups = [
-            {"items": g1, "pct": p1},
-            {"items": g2, "pct": p2},
-            {"items": g3, "pct": p3}
-        ]
-        temp_groups.sort(key=lambda x: x["pct"], reverse=True)
-        
-        dom_g = temp_groups[0]["items"]
-        sec_g = temp_groups[1]["items"]
-        acc_g = temp_groups[2]["items"]
+        # Khởi tạo các block màu cho thanh đứng chứa trọn vẹn dải màu
+        vertical_items_html = ""
+        for f in ordered_macro_list:
+            pct_f = f["pct"] * 100
+            if pct_f > 0:
+                tc = on_color(f["macro"]["rgb"])
+                label = f'{pct_f:.1f}%' if pct_f >= 6 else ""
+                vertical_items_html += f'<div style="background:{f["macro"]["hex"]}; flex:{pct_f}; width:100%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:{tc};" title="[{f["macro"]["category"]}] {f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
 
-        # Sắp xếp mượt mà dải swatch hiển thị
-        dom = sort_hue(dom_g)
-        sec = sort_hue(sec_g)
-        acc = sort_hue(acc_g)
+        # Nhúng cấu trúc Flexbox: Đảm bảo thanh màu co giãn tự động theo chiều cao ảnh gốc bên cạnh
+        side_by_side_layout = f"""
+        <div style="display: flex; gap: 16px; align-items: stretch; width: 100%; margin-top: 5px;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size:.65rem;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Ảnh gốc</div>
+                <img src="data:image/jpeg;base64,{img_b64}" style="width:100%; height:auto; display:block; border:1px solid var(--line);" />
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size:.65rem;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Thanh tỷ lệ đứng</div>
+                <div style="display:flex; flex-direction:column; width:100%; flex:1; border:1px solid var(--line); overflow:hidden;">
+                    {vertical_items_html}
+                </div>
+            </div>
+        </div>
+        """
+        st.markdown(side_by_side_layout, unsafe_allow_html=True)
 
-        st.markdown("<div style='height:1.1rem'></div>", unsafe_allow_html=True)
-
-        # Render image via HTML to bypass Streamlit border injection
-        thumb = image.copy(); thumb.thumbnail((900,1400),RESAMPLE)
-        st.markdown(
-            f'<img src="data:image/jpeg;base64,{img_to_b64(thumb)}" '
-            f'style="width:100%;display:block;border:1px solid var(--line);" />',
-            unsafe_allow_html=True
-        )
-
-        # Summary chips
-        ad=wavg(dom); as_=wavg(sec); aa=wavg(acc)
-        pd=sum(i["pct"] for i in dom)*100
-        ps=sum(i["pct"] for i in sec)*100
-        pa=sum(i["pct"] for i in acc)*100
-        chips=""
-        for rgb_c,lbl,p in [(ad,"Chính",pd),(as_,"Phụ",ps),(aa,"Nhấn",pa)]:
-            chips+=(f'<div style="display:flex;align-items:center;gap:6px;background:#fff;'
-                    f'border:1px solid var(--line);padding:5px 11px;">'
-                    f'<div style="width:8px;height:8px;background:{rgb_to_hex(rgb_c)};"></div>'
-                    f'<span style="font-size:.68rem;font-weight:500;color:var(--t2);">'
-                    f'{lbl} {p:.0f}%</span></div>')
-        st.markdown(f'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:.9rem;">{chips}</div>', unsafe_allow_html=True)
+        # Chips tóm tắt phần trăm diện tích
+        chips = ""
+        for rgb_c, lbl, p, n in [(ad, "Chính", pd, len(dom)), (as_, "Phụ", ps, len(sec)), (aa, "Nhấn", pa, len(acc))]:
+            chips += (
+                f'<div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);padding:5px 11px;">'
+                f'<div style="width:8px;height:8px;background:{rgb_to_hex(rgb_c)};"></div>'
+                f'<span style="font-size:.68rem;font-weight:500;color:var(--t2);">'
+                f'{lbl} {p:.1f}% <span style="color:var(--t3);">({n} sắc độ)</span></span></div>'
+            )
+        st.markdown(f'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:.7rem;">{chips}</div>', unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:3.5rem 1.5rem;
-        text-align:center;margin-top:.5rem;">
-        <div style="font-size:1rem;font-weight:400;color:var(--t2);">Chưa có ảnh</div>
-        <div style="font-size:.78rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
+        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:4.5rem 1.5rem;text-align:center;margin-top:.5rem;">
+        <div style="font-size:0.9rem;color:var(--t2);">Chưa có ảnh</div>
+        <div style="font-size:.75rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán từ Clipboard để bắt đầu phân tích</div>
         </div>""", unsafe_allow_html=True)
 
 
-# ─── RIGHT ────────────────────────────────────────────────────────────────────
+# ─── CỘT PHẢI: CHI TIẾT DẢI MÀU & NÚT BẤM SÁT CẠNH NHAU ───────────────────────
 with col_right:
     if image is not None and dom:
-
-        pd=sum(i["pct"] for i in dom)*100
-        ps=sum(i["pct"] for i in sec)*100
-        pa=sum(i["pct"] for i in acc)*100
-        ad=wavg(dom); as_=wavg(sec); aa=wavg(acc)
-
-        groups=[
-            {"name":"Màu Chính","sub":"Chủ đạo (15 màu)","key":"dom",
-             "items":dom,"total_pct":pd,"avg_rgb":ad,"avg_hex":rgb_to_hex(ad),"label_short":"Chính"},
-            {"name":"Màu Phụ","sub":"Chuyển tiếp xu hướng (15 màu)","key":"sec",
-             "items":sec,"total_pct":ps,"avg_rgb":as_,"avg_hex":rgb_to_hex(as_),"label_short":"Phụ"},
-            {"name":"Màu Nhấn","sub":"Điểm nhấn (15 màu)","key":"acc",
-             "items":acc,"total_pct":pa,"avg_rgb":aa,"avg_hex":rgb_to_hex(aa),"label_short":"Nhấn"},
+        gs = [
+            {"name": "Màu Chính", "sub": f"Chủ đạo ({len(dom)} sắc độ)", "key": "dom", "items": dom, "total_pct": pd, "avg_hex": rgb_to_hex(ad), "label_short": "Chính"},
+            {"name": "Màu Phụ", "sub": f"Chuyển tiếp ({len(sec)} sắc độ)", "key": "sec", "items": sec, "total_pct": ps, "avg_hex": rgb_to_hex(as_), "label_short": "Phụ"},
+            {"name": "Màu Nhấn", "sub": f"Tương phản ({len(acc)} sắc độ)", "key": "acc", "items": acc, "total_pct": pa, "avg_hex": rgb_to_hex(aa), "label_short": "Nhấn"},
         ]
-        gs = sorted(groups, key=lambda x:x["total_pct"], reverse=True)
 
-        # Section eyebrow
-        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:var(--t3);margin-bottom:1.25rem;">Phân tích hệ màu</div>',
-                    unsafe_allow_html=True)
-
-        # ── A · WHEEL + LEGEND ────────────────────────────────────────────────
-        wc, lc = st.columns([1, 1.4], gap="large")
-        all_pts = dom+sec+acc
+        # ── A · BÁNH XE MÀU SẮC ──
+        wc, lc = st.columns([1, 1.3], gap="large")
+        all_pts = dom + sec + acc
         wimg = make_wheel(all_pts, size=1200, out=300)
 
         with wc:
-            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;'
-                        'text-transform:uppercase;color:var(--t3);margin-bottom:.6rem;">Bánh xe màu sắc</div>',
-                        unsafe_allow_html=True)
-            # HTML img — no Streamlit border override
-            st.markdown(
-                f'<img src="data:image/png;base64,{img_to_b64(wimg,"PNG")}" '
-                f'style="width:300px;max-width:100%;display:block;" />',
-                unsafe_allow_html=True
-            )
-            st.markdown("<div style='height:.55rem'></div>", unsafe_allow_html=True)
-            buf_w=io.BytesIO(); make_wheel(all_pts,1200,1200).save(buf_w,"PNG")
-            
+            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:.4rem;">Bánh xe màu sắc</div>', unsafe_allow_html=True)
+            st.markdown(f'<img src="data:image/png;base64,{img_to_b64(wimg, "PNG")}" style="width:210px;max-width:100%;display:block;" />', unsafe_allow_html=True)
+            st.markdown("<div style='height:.5rem'></div>", unsafe_allow_html=True)
+            buf_w = io.BytesIO()
+            make_wheel(all_pts, 1200, 1200).save(buf_w, "PNG")
+
             wcol1, wcol2 = st.columns([1, 1])
-            with wcol1:
-                st.download_button("↓ Tải bánh xe", data=buf_w.getvalue(),
-                                   file_name="color_wheel.png", mime="image/png", key="dl_wheel")
+            with wcol1: st.download_button("📥 TẢI VỀ", data=buf_w.getvalue(), file_name="color_wheel.png", mime="image/png", key="dl_wheel", use_container_width=True)
             with wcol2:
-                if st.button("📋 Copy bánh xe", key="copy_wheel"):
-                    if copy_bytes_to_clipboard(buf_w.getvalue()):
-                        st.toast("Đã copy bánh xe màu vào Clipboard!", icon="📋")
-                    else:
-                        st.error("Không thể copy.")
+                if st.button("📋 COPY", key="copy_wheel", use_container_width=True):
+                    if copy_bytes_to_clipboard(buf_w.getvalue()): st.toast("Đã copy bánh xe màu!", icon="📋")
 
         with lc:
-            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;'
-                        'text-transform:uppercase;color:var(--t3);margin-bottom:.75rem;">Màu đại diện nhóm</div>',
-                        unsafe_allow_html=True)
+            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:.5rem;">Màu đại diện nhóm</div>', unsafe_allow_html=True)
             for g in gs:
                 st.markdown(f"""
-                <div style="display:flex;align-items:stretch;gap:0;
-                            margin-bottom:8px;border:1px solid var(--line);overflow:hidden;">
-                    <div style="width:68px;min-height:68px;flex-shrink:0;background:{g['avg_hex']};"></div>
-                    <div style="padding:11px 15px;display:flex;flex-direction:column;
-                                justify-content:center;gap:3px;background:#fff;flex:1;">
-                        <div style="font-size:.88rem;font-weight:600;color:var(--t1);">{g['name']}</div>
-                        <div style="font-size:.7rem;color:var(--t3);letter-spacing:.03em;">
-                            <span style="font-family:'Google Sans Flex',sans-serif;">{g['avg_hex']}</span>
-                        </div>
-                        <div style="font-size:.8rem;font-weight:600;color:var(--t1);">{g['total_pct']:.1f}%</div>
+                <div style="display:flex;align-items:stretch;margin-bottom:6px;border:1px solid var(--line);overflow:hidden;height:60px;">
+                    <div style="width:55px;background:{g['avg_hex']};flex-shrink:0;"></div>
+                    <div style="padding:6px 12px;display:flex;flex-direction:column;justify-content:center;background:#fff;flex:1;">
+                        <div style="font-size:.82rem;font-weight:600;color:var(--t1);">{g['name']} <span style="font-size:.7rem;font-weight:400;color:var(--t3);margin-left:4px;">{g['sub']}</span></div>
+                        <div style="font-size:.7rem;color:var(--t3);">{g['avg_hex']} &nbsp;·&nbsp; <strong style="color:var(--t1);">{g['total_pct']:.1f}%</strong></div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
         st.markdown("---")
 
-        # ── B · BARS ──────────────────────────────────────────────────────────
-        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:var(--t3);margin-bottom:1rem;">Thanh tỷ lệ màu</div>',
-                    unsafe_allow_html=True)
+        # ── B · CÁC THANH TỶ LỆ PHÂN BỐ NGANG ──
+        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:.75rem;">Dải phân bố ngang</div>', unsafe_allow_html=True)
 
-        # Macro bar Header
-        mcol1, mcol2, mcol3 = st.columns([4, 1.2, 1.2])
-        with mcol1:
-            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Khái quát theo nhóm</div>',
-                        unsafe_allow_html=True)
-        with mcol2:
-            st.download_button("↓ Tải dải màu", data=macro_png(gs),
-                               file_name="bar_macro.png", mime="image/png", key="dl_macro")
+        # 1. Thanh Tổng Quát Khái Quát (Ngang)
+        mcol1, mcol2, mcol3 = st.columns([4.0, 1.2, 1.2])
+        with mcol1: st.markdown('<div style="font-size:.82rem;font-weight:600;color:var(--t1);margin-top:0.3rem;">Thanh tỷ lệ tổng quát</div>', unsafe_allow_html=True)
+        with mcol2: st.download_button("📥 TẢI VỀ", data=macro_png_tineye(ordered_macro_list), file_name="bar_macro.png", mime="image/png", key="dl_macro", use_container_width=True)
         with mcol3:
-            if st.button("📋 Copy dải màu", key="copy_macro"):
-                if copy_bytes_to_clipboard(macro_png(gs)):
-                    st.toast("Đã copy dải màu khái quát!", icon="📋")
-                else:
-                    st.error("Không thể copy.")
+            if st.button("📋 COPY", key="copy_macro", use_container_width=True):
+                if copy_bytes_to_clipboard(macro_png_tineye(ordered_macro_list)): st.toast("Đã copy dải màu tổng quát!", icon="📋")
 
-        # Macro bar spans 100% width, height=36px
-        bar = '<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 0.75rem 0;">'
-        for g in gs:
-            if g["total_pct"]>0:
-                tc      = on_color(g["avg_rgb"])
-                label   = f'{g["label_short"]} {g["total_pct"]:.0f}%' if g["total_pct"]>=8 else ""
-                gshort  = g["label_short"]
-                ghex    = g["avg_hex"]
-                gpct    = g["total_pct"]
-                bar+=(f'<div style="background:{ghex};width:{gpct}%;height:100%;'
-                      f'display:flex;align-items:center;justify-content:center;'
-                      f'font-size:12px;font-weight:600;color:{tc};letter-spacing:.04em;"'
-                      f' title="{gshort}: {ghex} ({gpct:.1f}%)">'
-                      f'{label}</div>')
-        bar+='</div>'
-        st.markdown(bar, unsafe_allow_html=True)
+        bar_macro_html = '<div style="display:flex;width:100%;height:32px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 1.2rem 0;">'
+        for f in ordered_macro_list:
+            pct_f = f["pct"] * 100
+            if pct_f > 0:
+                tc = on_color(f["macro"]["rgb"])
+                label = f'{pct_f:.1f}%' if pct_f >= 5 else ""
+                bar_macro_html += f'<div style="background:{f["macro"]["hex"]};width:{pct_f}%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{tc};" title="{f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
+        bar_macro_html += '</div>'
+        st.markdown(bar_macro_html, unsafe_allow_html=True)
 
-        # Ratio info
-        ratio = " &nbsp;·&nbsp; ".join(
-            f'<span style="color:var(--t1);font-weight:600;">{g["label_short"]}</span>'
-            f' <span style="color:var(--t1);">{g["total_pct"]:.1f}%</span>'
-            for g in gs)
-        st.markdown(f'<div style="font-size:.78rem;color:var(--t2);margin-top:0.1rem;margin-bottom:1.5rem;">{ratio}</div>',
-                    unsafe_allow_html=True)
 
-        # Detail bar Header
-        master=[]
-        for g in gs: master.extend(g["items"])
-
-        dcol1, dcol2, dcol3 = st.columns([4, 1.2, 1.2])
-        with dcol1:
-            st.markdown('<div style="font-size:.85rem;font-weight:600;color:var(--t1);margin-top:0.4rem;">Chi tiết 45 sắc độ</div>',
-                        unsafe_allow_html=True)
-        with dcol2:
-            st.download_button("↓ Tải dải màu", data=bar_png(master),
-                               file_name="bar_detail.png", mime="image/png", key="dl_detail")
+        # 2. Thanh Tổng Chi Tiết (Đã sửa lỗi định nghĩa master_detail)
+        master_detail = dom + sec + acc # Khai báo lại rõ ràng chuỗi mượt trước khi render
+        
+        dcol1, dcol2, dcol3 = st.columns([4.0, 1.2, 1.2])
+        with dcol1: st.markdown(f'<div style="font-size:.82rem;font-weight:600;color:var(--t1);margin-top:0.3rem;">Thanh dải sắc độ chi tiết</div>', unsafe_allow_html=True)
+        with dcol2: st.download_button("📥 TẢI VỀ", data=bar_png(master_detail, h=30), file_name="bar_detail.png", mime="image/png", key="dl_detail", use_container_width=True)
         with dcol3:
-            if st.button("📋 Copy dải màu", key="copy_detail"):
-                if copy_bytes_to_clipboard(bar_png(master)):
-                    st.toast("Đã copy dải màu chi tiết!", icon="📋")
-                else:
-                    st.error("Không thể copy.")
+            if st.button("📋 COPY", key="copy_detail", use_container_width=True):
+                if copy_bytes_to_clipboard(bar_png(master_detail, h=30)): st.toast("Đã copy dải màu chi tiết!", icon="📋")
 
-        # Detail bar spans 100% width, height=36px
-        bar2='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1.25rem 0;">'
-        for it in master:
-            r2,g2,b2=it["rgb"]; pv=it["pct"]*100
-            bar2+=f'<div style="background:rgb({r2},{g2},{b2});width:{pv}%;height:100%;" title="{it["hex"]} {pv:.1f}%"></div>'
-        bar2+='</div>'
-        st.markdown(bar2, unsafe_allow_html=True)
+        bar_detail_html = '<div style="display:flex;width:100%;height:16px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 1.5rem 0;">'
+        tot_m = sum(it["pct"] for it in master_detail)
+        for it in master_detail:
+            pv = (it["pct"] / tot_m * 100)
+            bar_detail_html += f'<div style="background:{it["hex"]};width:{pv}%;height:100%;" title="{it["hex"]} ({it["pct"]*100:.1f}%)"></div>'
+        bar_detail_html += '</div>'
+        st.markdown(bar_detail_html, unsafe_allow_html=True)
 
         st.markdown("---")
 
-        # ── C · SWATCHES ──────────────────────────────────────────────────────
-        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;'
-                    'text-transform:uppercase;color:var(--t3);margin-bottom:1.25rem;">Dải sắc độ từng nhóm</div>',
-                    unsafe_allow_html=True)
+        # ── C · THẺ HIỂN THỊ SWATCHES TỪNG PHÂN VÙNG BẬC THANG ─────────────────
+        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:1rem;">Chi tiết từng phân vùng bậc thang</div>', unsafe_allow_html=True)
 
         def render_group(g):
-            tot   = g["total_pct"]
-            items = sorted(g["items"], key=lambda x:x["pct"], reverse=True)
+            items_sorted_by_pct = sorted(g["items"], key=lambda x: x["pct"], reverse=True)
+            items_smooth_hue = g["items"]
 
-            # Group header with title, download, and copy buttons
-            gcol1, gcol2, gcol3 = st.columns([4, 1.2, 1.2])
+            gcol1, gcol2, gcol3 = st.columns([4.0, 1.2, 1.2])
             with gcol1:
-                st.markdown(
-                    f'<div style="display:flex;align-items:baseline;gap:10px;margin-top:0.25rem;">'
-                    f'<span style="font-size:1.05rem;font-weight:600;color:var(--t1);">{g["name"]}</span>'
-                    f'<span style="font-size:.75rem;color:var(--t3);">{g["sub"]}</span>'
-                    f'<span style="font-size:.9rem;font-weight:600;color:var(--t1);margin-left:8px;">{tot:.1f}%</span>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-            with gcol2:
-                st.download_button("↓ Tải dải màu", data=bar_png(items),
-                                   file_name=f'bar_{g["key"]}.png', mime="image/png",
-                                   key=f'dl_g_{g["key"]}')
+                st.markdown(f'<div style="display:flex;align-items:baseline;gap:8px;margin-top:0.2rem;"><span style="font-size:1rem;font-weight:600;color:var(--t1);">{g["name"]}</span><span style="font-size:.75rem;color:var(--t3);">{g["sub"]}</span><span style="font-size:.9rem;font-weight:600;color:var(--t1);margin-left:6px;">{g["total_pct"]:.1f}%</span></div>', unsafe_allow_html=True)
+            with gcol2: st.download_button("📥 TẢI VỀ", data=bar_png(items_smooth_hue), file_name=f'bar_{g["key"]}.png', mime="image/png", key=f'dl_g_{g["key"]}', use_container_width=True)
             with gcol3:
-                if st.button("📋 Copy dải màu", key=f'copy_g_{g["key"]}'):
-                    if copy_bytes_to_clipboard(bar_png(items)):
-                        st.toast(f"Đã copy dải màu {g['label_short'].lower()}!", icon="📋")
-                    else:
-                        st.error("Không thể copy.")
+                if st.button("📋 COPY", key=f'copy_g_{g["key"]}', use_container_width=True):
+                    if copy_bytes_to_clipboard(bar_png(items_smooth_hue)): st.toast(f"Đã sao chép dải màu nhóm!", icon="📋")
 
-            # Group bar — spans 100% width, height=36px
-            bh='<div style="display:flex;width:100%;height:36px;overflow:hidden;border:1px solid var(--line);margin:0.5rem 0 1rem 0;">'
-            for it in items:
-                w=(it["pct"]/(tot/100))*100
-                bh+=f'<div style="background:rgb({it["rgb"][0]},{it["rgb"][1]},{it["rgb"][2]});width:{w}%;height:100%;"></div>'
-            bh+='</div>'
+            # Thanh phổ ngang riêng của nhóm màu
+            bh = '<div style="display:flex;width:100%;height:26px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 .8rem 0;">'
+            gtot = sum(i["pct"] for i in items_smooth_hue)
+            for it in items_smooth_hue:
+                w = (it["pct"] / gtot * 100) if gtot > 0 else (100 / len(items_smooth_hue))
+                bh += f'<div style="background:{it["hex"]};width:{w}%;height:100%;"></div>'
+            bh += '</div>'
             st.markdown(bh, unsafe_allow_html=True)
 
-            # Swatch tiles — 5 per row (compacted for symmetrical 3x5 layout)
-            CPR=5
-            for ri in range(0,len(items),CPR):
-                chunk=items[ri:ri+CPR]
-                cols=st.columns(CPR)
-                for ci,it in enumerate(chunk):
-                    pv=it["pct"]*100
+            # Grid bảng mã màu thẻ
+            CPR = 5
+            for ri in range(0, len(items_sorted_by_pct), CPR):
+                chunk = items_sorted_by_pct[ri:ri + CPR]
+                cols  = st.columns(CPR)
+                for ci, it in enumerate(chunk):
+                    pv = it["pct"] * 100
                     with cols[ci]:
                         st.markdown(
-                            f'<div style="background:{it["hex"]};height:24px;'
-                            f'border:1px solid rgba(0,0,0,.08);margin-bottom:4px;"></div>'
-                            f'<div style="font-size:.65rem;text-align:center;font-weight:600;'
-                            f'color:var(--t2);line-height:1.2;">{pv:.1f}%</div>'
-                            f'<div style="font-size:.58rem;text-align:center;color:var(--t3);'
-                            f'font-family:\'Google Sans Flex\',sans-serif;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;">{it["hex"]}</div>',
+                            f'<div style="background:{it["hex"]};height:20px;border:1px solid rgba(0,0,0,.06);margin-bottom:3px;"></div>'
+                            f'<div style="font-size:.65rem;text-align:center;font-weight:600;color:var(--t2);line-height:1.1;">{pv:.1f}%</div>'
+                            f'<div style="font-size:.58rem;text-align:center;color:var(--t3);font-family:monospace;">{it["hex"]}</div>',
                             unsafe_allow_html=True
                         )
-            st.markdown("<div style='height:1.1rem'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
-        for idx,g in enumerate(gs):
+        for idx, g in enumerate(gs):
             render_group(g)
-            if idx<len(gs)-1:
-                st.markdown('<div style="border-top:1px solid var(--line);margin-bottom:1.25rem;"></div>',
-                            unsafe_allow_html=True)
+            if idx < len(gs) - 1:
+                st.markdown('<div style="border-top:1px solid var(--line);margin-bottom:1rem;"></div>', unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:5rem 2rem;
-        text-align:center;margin-top:2rem;">
+        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:5rem 2rem;text-align:center;margin-top:2rem;">
         <div style="font-size:1.4rem;font-weight:300;color:var(--t3);">Chưa có ảnh để phân tích</div>
         <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
