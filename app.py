@@ -306,15 +306,6 @@ with col_left:
     st.markdown("<p style='font-size:0.8rem;font-weight:600;color:var(--t2);margin-bottom:0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
     up = st.file_uploader("upload", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
 
-    # Bản hướng dẫn kéo thả tối giản bằng HTML/CSS siêu nhẹ
-    st.markdown("""
-    <div style="background:#fff; border:1px solid var(--line); padding:0.8rem 1rem; border-radius:4px; margin-top:0.6rem;">
-        <div style="font-size:0.78rem; font-weight:700; color:var(--t1); margin-bottom:0.25rem;">💡 Mẹo kéo thả nhanh trên Web</div>
-        <div style="font-size:0.75rem; color:var(--t2); line-height:1.5;">
-            Bạn có thể <b>kéo tệp ảnh trực tiếp</b> từ thư mục máy tính (hoặc kéo ảnh từ một trang web khác) thả thẳng vào khung kéo thả ở trên để phân tích tức thì.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
     image = None
     if up:
