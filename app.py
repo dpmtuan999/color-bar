@@ -143,14 +143,13 @@ def color_distance_redmean(rgb1, rgb2):
     return np.sqrt(weight_r * delta_r**2 + weight_g * delta_g**2 + weight_b * delta_b**2)
 
 
-# ─── THUẬT TOÁN PHÂN LOẠI LAI TINH CHỈNH (VISUAL HYBRID CLASSIFICATION) ──────
+# ─── THUẬT TOÁN PHÂN LOẠI LAI TINH CHỈNH ──────────────────────────────────────
 def classify_hybrid(families):
     if not families:
         return families
 
     families_sorted = sorted(families, key=lambda x: x["pct"], reverse=True)
     
-    # Bước 1: Phân chia cơ sở theo diện tích lũy
     cum_sum = 0.0
     for f in families_sorted:
         cum_sum += f["pct"]
@@ -161,23 +160,19 @@ def classify_hybrid(families):
         else:
             f["macro"]["category"] = "Nhấn"
 
-    # Bước 2: Tinh lọc nghiêm ngặt dựa trên độ bão hòa màu sắc thực tế
     for f in families_sorted:
         pct = f["pct"]
         s = f["macro"]["s"]
         is_neutral = f["macro"]["is_neutral"]
 
-        # QUY TẮC ĐẶC CÁCH MÀU NHẤN:
-        # Nếu là sắc độ rực rỡ có chủ ý (S >= 0.38) và diện tích nhỏ (< 12%) -> Chắc chắn làm màu Nhấn
+        # ĐẶC CÁCH MÀU NHẤN: Độc lập rực rỡ (S >= 0.38) diện tích nhỏ (< 12%)
         if not is_neutral and s >= 0.38 and pct < 0.12:
             f["macro"]["category"] = "Nhấn"
 
-        # QUY TẮC HẠ CẤP MÀU NHẤN GIẢ:
-        # Nếu diện tích nhỏ nằm ở đuôi nhưng thực tế lại là tông xám/nâu trầm (S < 0.38) -> Hạ về màu Phụ
+        # KHỬ MÀU NHẤN GIẢ: Đuôi xám/trầm (S < 0.38) -> Trả về màu Phụ
         elif f["macro"]["category"] == "Nhấn" and (is_neutral or s < 0.38):
             f["macro"]["category"] = "Phụ"
 
-    # Khắc phục trường hợp phân loại rỗng
     all_cats = [f["macro"]["category"] for f in families_sorted]
     if "Chính" not in all_cats:
         families_sorted[0]["macro"]["category"] = "Chính"
@@ -284,7 +279,7 @@ def make_wheel(pts, size=600, out=300):
     return wimg.resize((out, out), resample=RESAMPLE)
 
 
-# ─── TIÊU ĐỀ CHÍNH APP & KHỞI TẠO BIẾN CỘT TOÀN CỤC ───────────────────────────
+# ─── TIÊU ĐỀ CHÍNH APP ────────────────────────────────────────────────────────
 st.markdown("""
 <div style="margin-bottom:1.5rem;">
     <div style="font-family:'Google Sans Flex',sans-serif;font-size:2.25rem;font-weight:700;
@@ -311,32 +306,19 @@ with col_left:
     st.markdown("<p style='font-size:0.8rem;font-weight:600;color:var(--t2);margin-bottom:0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
     up = st.file_uploader("upload", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
 
-    st.markdown("<div style='text-align:center;margin:0.25rem 0;font-size:0.72rem;color:var(--t3);'>hoặc</div>", unsafe_allow_html=True)
-
-    if st.button("📋 Dán ảnh từ Clipboard", use_container_width=True):
-        try:
-            from PIL import ImageGrab
-            clipboard_image = ImageGrab.grabclipboard()
-            if clipboard_image is not None:
-                if isinstance(clipboard_image, list) and len(clipboard_image) > 0:
-                    st.session_state["clipboard_image"] = Image.open(clipboard_image[0])
-                else:
-                    st.session_state["clipboard_image"] = clipboard_image
-                st.toast("Đã dán ảnh từ Clipboard thành công!", icon="📋")
-            else:
-                st.warning("Không tìm thấy hình ảnh trong Clipboard.")
-        except Exception as e:
-            st.info(
-                "💡 **Tính năng dán qua nút bấm chỉ hỗ trợ khi chạy Offline (Localhost).**\n\n"
-                "**Cách dán ảnh trên Web:** Bạn hãy nhấp chuột chọn khung **Browse files** ở phía trên, sau đó nhấn phím tắt `Cmd + V` (Mac) hoặc `Ctrl + V` (Windows) để trình duyệt tự động nạp ảnh từ clipboard."
-            )
+    # Bản hướng dẫn kéo thả tối giản bằng HTML/CSS siêu nhẹ
+    st.markdown("""
+    <div style="background:#fff; border:1px solid var(--line); padding:0.8rem 1rem; border-radius:4px; margin-top:0.6rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--t1); margin-bottom:0.25rem;">💡 Mẹo kéo thả nhanh trên Web</div>
+        <div style="font-size:0.75rem; color:var(--t2); line-height:1.5;">
+            Bạn có thể <b>kéo tệp ảnh trực tiếp</b> từ thư mục máy tính (hoặc kéo ảnh từ một trang web khác) thả thẳng vào khung kéo thả ở trên để phân tích tức thì.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     image = None
     if up:
         image = Image.open(up)
-        if "clipboard_image" in st.session_state: del st.session_state["clipboard_image"]
-    elif "clipboard_image" in st.session_state:
-        image = st.session_state["clipboard_image"]
 
     if image:
         work = image.convert("RGB")
@@ -365,7 +347,7 @@ with col_left:
                 else: bin_id = 102
             else:
                 hue_bin = int(h * 12) % 12
-                # Phân rã độ bão hòa (Chrome Splitting) ngăn màu rực rỡ bị lấn át bởi màu trầm
+                # Phân rã độ bão hòa (Chroma Splitting) ngăn màu rực rỡ bị lấn át bởi màu trầm
                 if s < 0.38:
                     bin_id = hue_bin + 12
                 else:
@@ -425,7 +407,6 @@ with col_left:
                 }
             })
 
-        # Phân loại lai nâng cấp (Hybrid)
         families_classified = classify_hybrid(families)
 
         dom_families = [f for f in families_classified if f["macro"]["category"] == "Chính"]
@@ -510,7 +491,7 @@ with col_left:
     else:
         st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:4.5rem 1.5rem;text-align:center;margin-top:.5rem;">
         <div style="font-size:0.9rem;color:var(--t2);">Chưa có ảnh</div>
-        <div style="font-size:.75rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán từ Clipboard để bắt đầu phân tích</div>
+        <div style="font-size:.75rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
 
 
