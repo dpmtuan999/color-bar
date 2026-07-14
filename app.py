@@ -9,8 +9,7 @@ import os
 
 st.set_page_config(
     page_title="Beyond Photography",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 RESAMPLE = Image.Resampling.LANCZOS if hasattr(Image, "Resampling") else Image.ANTIALIAS
@@ -46,9 +45,6 @@ button div p, button div,
 .stApp                    { background: var(--bg) !important; }
 #MainMenu, footer, header { visibility: hidden !important; }
 .block-container          { padding: 2.5rem 2.75rem 5rem !important; max-width: 1400px !important; }
-
-[data-testid="stSidebar"]            { background: var(--surface) !important; border-right: 1px solid var(--line) !important; box-shadow: none !important; }
-[data-testid="stSidebar"] > div      { padding: 2.25rem 1.75rem !important; }
 
 [data-testid="stImage"],
 [data-testid="stImage"] > *,
@@ -147,13 +143,14 @@ def color_distance_redmean(rgb1, rgb2):
     return np.sqrt(weight_r * delta_r**2 + weight_g * delta_g**2 + weight_b * delta_b**2)
 
 
-# ─── THUẬT TOÁN PHÂN LOẠI LAI TINH CHỈNH ──────────────────────────────────────
+# ─── THUẬT TOÁN PHÂN LOẠI LAI TINH CHỈNH (VISUAL HYBRID CLASSIFICATION) ──────
 def classify_hybrid(families):
     if not families:
         return families
 
     families_sorted = sorted(families, key=lambda x: x["pct"], reverse=True)
     
+    # Bước 1: Phân chia cơ sở theo diện tích lũy
     cum_sum = 0.0
     for f in families_sorted:
         cum_sum += f["pct"]
@@ -164,19 +161,23 @@ def classify_hybrid(families):
         else:
             f["macro"]["category"] = "Nhấn"
 
+    # Bước 2: Tinh lọc nghiêm ngặt dựa trên độ bão hòa màu sắc thực tế
     for f in families_sorted:
         pct = f["pct"]
         s = f["macro"]["s"]
         is_neutral = f["macro"]["is_neutral"]
 
-        # ĐẶC CÁCH MÀU NHẤN: Sực rỡ (S >= 0.38) diện tích nhỏ (< 12%)
+        # QUY TẮC ĐẶC CÁCH MÀU NHẤN:
+        # Nếu là sắc độ rực rỡ có chủ ý (S >= 0.38) và diện tích nhỏ (< 12%) -> Chắc chắn làm màu Nhấn
         if not is_neutral and s >= 0.38 and pct < 0.12:
             f["macro"]["category"] = "Nhấn"
 
-        # KHỬ MÀU NHẤN GIẢ: Đuôi xám/trầm (S < 0.38) -> Trả về màu Phụ
+        # QUY TẮC HẠ CẤP MÀU NHẤN GIẢ:
+        # Nếu diện tích nhỏ nằm ở đuôi nhưng thực tế lại là tông xám/nâu trầm (S < 0.38) -> Hạ về màu Phụ
         elif f["macro"]["category"] == "Nhấn" and (is_neutral or s < 0.38):
             f["macro"]["category"] = "Phụ"
 
+    # Khắc phục trường hợp phân loại rỗng
     all_cats = [f["macro"]["category"] for f in families_sorted]
     if "Chính" not in all_cats:
         families_sorted[0]["macro"]["category"] = "Chính"
@@ -242,10 +243,6 @@ def copy_bytes_to_clipboard(png_bytes):
 
 @st.cache_data
 def wheel_base(size=600):
-    """
-    Giảm kích thước chuẩn xuống 600 giúp giảm tải tính toán ma trận đi 4 lần
-    nhưng vẫn đảm bảo độ sắc nét cao khi hiển thị và tải về.
-    """
     x = np.linspace(-1, 1, size)
     y = np.linspace(-1, 1, size)
     xv, yv = np.meshgrid(x, y)
@@ -287,29 +284,16 @@ def make_wheel(pts, size=600, out=300):
     return wimg.resize((out, out), resample=RESAMPLE)
 
 
-# ─── SIDEBAR ──────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("""
-    <div style="margin-bottom:2rem;">
-        <div style="font-family:'Google Sans Flex',sans-serif;font-size:1.35rem;font-weight:700;
-                    color:#1D1D1F;letter-spacing:-0.025em;line-height:1.15;">
-            Beyond<br><span style="color:#000;font-weight:800;">Photography</span>
-        </div>
-        <div style="margin-top:0.4rem;font-size:0.66rem;font-weight:600;letter-spacing:0.15em;
-                    text-transform:uppercase;color:#86868B;">Color Analysis System</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("""<p style="font-size:0.84rem;color:var(--t2);line-height:1.65;margin-bottom:1rem;">
-    Hệ thống phân tích tỷ lệ màu sắc cao cấp, tự động bóc tách độc lập giữa "Sắc rực" (Vibrant) và "Tone trầm" (Muted) cho từng múi màu.
-    </p>""", unsafe_allow_html=True)
-
-
 # ─── TIÊU ĐỀ CHÍNH APP & KHỞI TẠO BIẾN CỘT TOÀN CỤC ───────────────────────────
 st.markdown("""
-<h1>Beyond Photography</h1>
-<div style="margin-top:.35rem;font-size:.68rem;font-weight:600;letter-spacing:.2em;
-            text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc cấu trúc thị giác</div>
+<div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Google Sans Flex',sans-serif;font-size:2.25rem;font-weight:700;
+                color:#1D1D1F;letter-spacing:-0.03em;line-height:1.1;">
+        Beyond Photography
+    </div>
+    <div style="margin-top:.45rem;font-size:.68rem;font-weight:600;letter-spacing:.2em;
+                text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc cấu trúc thị giác</div>
+</div>
 """, unsafe_allow_html=True)
 st.markdown("---")
 
@@ -342,7 +326,10 @@ with col_left:
             else:
                 st.warning("Không tìm thấy hình ảnh trong Clipboard.")
         except Exception as e:
-            st.error(f"Không thể đọc clipboard: {e}")
+            st.info(
+                "💡 **Tính năng dán qua nút bấm chỉ hỗ trợ khi chạy Offline (Localhost).**\n\n"
+                "**Cách dán ảnh trên Web:** Bạn hãy nhấp chuột chọn khung **Browse files** ở phía trên, sau đó nhấn phím tắt `Cmd + V` (Mac) hoặc `Ctrl + V` (Windows) để trình duyệt tự động nạp ảnh từ clipboard."
+            )
 
     image = None
     if up:
@@ -353,11 +340,11 @@ with col_left:
 
     if image:
         work = image.convert("RGB")
-        # GIẢI PHÁP 2: Downsampling xuống 150x150 giúp tăng tốc độ gấp 4 lần
+        # Downsampling xuống 150x150 tăng hiệu năng
         arr  = np.array(work.resize((150, 150), Image.Resampling.BILINEAR))
         px   = arr.reshape(-1, 3)
 
-        # GIẢI PHÁP 1: Sử dụng MiniBatchKMeans với n_init=1 giúp giải quyết cụm màu dưới 0.1 giây
+        # Trích xuất 40 màu cơ sở bằng MiniBatchKMeans siêu tốc
         km_detail = MiniBatchKMeans(n_clusters=40, random_state=42, n_init=1, batch_size=2048)
         lbs_detail = km_detail.fit_predict(px)
         clr_detail = km_detail.cluster_centers_.astype(int)
@@ -378,7 +365,7 @@ with col_left:
                 else: bin_id = 102
             else:
                 hue_bin = int(h * 12) % 12
-                # Phân rã lớp bão hòa rực rỡ và trầm
+                # Phân rã độ bão hòa (Chrome Splitting) ngăn màu rực rỡ bị lấn át bởi màu trầm
                 if s < 0.38:
                     bin_id = hue_bin + 12
                 else:
@@ -413,7 +400,6 @@ with col_left:
             if not found_match:
                 micro_colors.append(r_mc)
 
-        # Gom nhóm màu vào rổ
         bin_groups = {}
         for mc in micro_colors:
             bid = mc["bin_id"]
@@ -424,6 +410,7 @@ with col_left:
         for bid, items in bin_groups.items():
             tot_pct = sum(it["pct"] for it in items)
             
+            # Dominant Representative: Lấy sắc độ nổi trội nhất đại diện nhóm
             repr_item = max(items, key=lambda x: x["pct"])
             macro_rgb = repr_item["rgb"]
             
@@ -438,6 +425,7 @@ with col_left:
                 }
             })
 
+        # Phân loại lai nâng cấp (Hybrid)
         families_classified = classify_hybrid(families)
 
         dom_families = [f for f in families_classified if f["macro"]["category"] == "Chính"]
@@ -538,15 +526,12 @@ with col_right:
         # ── A · BÁNH XE MÀU SẮC ──
         wc, lc = st.columns([1, 1.3], gap="large")
         all_pts = dom + sec + acc
-        
-        # GIẢI PHÁP 3: Chỉ vẽ bánh xe độ phân giải trung bình (600x600) một lần duy nhất
         wimg_600 = make_wheel(all_pts, size=600, out=300)
 
         with wc:
             st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:.4rem;">Bánh xe màu sắc</div>', unsafe_allow_html=True)
             st.markdown(f'<img src="data:image/png;base64,{img_to_b64(wimg_600, "PNG")}" style="width:210px;max-width:100%;display:block;" />', unsafe_allow_html=True)
             st.markdown("<div style='height:.5rem'></div>", unsafe_allow_html=True)
-            
             buf_w = io.BytesIO()
             wimg_600.save(buf_w, "PNG")
 
@@ -660,3 +645,12 @@ with col_right:
         <div style="font-size:1.4rem;font-weight:300;color:var(--t3);">Chưa có ảnh để phân tích</div>
         <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
+
+
+# ─── PHẦN CHÂN TRANG (FOOTER) THIẾT KẾ TỐI GIẢN ────────────────────────────────
+st.markdown("""
+<hr>
+<div style="text-align: center; padding: 1.5rem 0 1rem; font-size: 0.75rem; color: var(--t3); letter-spacing: 0.08em; text-transform: uppercase;">
+    BEYOND PHOTOGRAPHY © 2025 • <a href="https://beyondphotography.vn" target="_blank" style="color: var(--t2); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--line);">beyondphotography.vn</a>
+</div>
+""", unsafe_allow_html=True)
