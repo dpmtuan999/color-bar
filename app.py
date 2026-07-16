@@ -14,12 +14,26 @@ st.set_page_config(
 
 RESAMPLE = Image.Resampling.LANCZOS if hasattr(Image, "Resampling") else Image.ANTIALIAS
 
-# ─── HỆ THỐNG GIAO DIỆN CHUYÊN NGHIỆP (CSS STYLE) ────────────────=============
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..144,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600&family=Google+Sans+Flex:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; }
+
+:root {
+    --canvas:           #ffffff;
+    --surface-soft:     #f4f4f5;
+    --surface-card:     #fafafa;
+    --surface-elevated: #f4f4f5;
+    --hairline:         #e4e4e7;
+    --hairline-strong:  #a1a1aa;
+    --ink:              #000000;
+    --body:             #18181b;
+    --body-strong:      #27272a;
+    --muted:            #52525b;
+    --muted-soft:       #a1a1aa;
+    --link:             #003eff;
+}
 
 html, body, [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] span,
@@ -28,31 +42,20 @@ summary, [data-testid="stExpander"] summary,
 button div p, button div,
 .stDownloadButton button,
 [data-testid="stSidebar"] * {
-    font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-:root {
-    --bg:      #F5F5F7;
-    --surface: #FFFFFF;
-    --line:    #E5E5EA;
-    --line-s:  #F2F2F7;
-    --t1:      #1D1D1F;
-    --t2:      #515154;
-    --t3:      #86868B;
-    --warm:    #1D1D1F;
-}
-
-.stApp                    { background: var(--bg) !important; }
+.stApp                    { background: var(--canvas) !important; color: var(--body) !important; }
 #MainMenu, footer, header { visibility: hidden !important; }
-.block-container          { padding: 2.5rem 2.75rem 5rem !important; max-width: 1400px !important; }
+.block-container          { padding: 2.5rem 2.5rem 5rem !important; max-width: 1280px !important; }
 
 [data-testid="stImage"],
 [data-testid="stImage"] > *,
 [data-testid="stImage"] img,
 figure, figure img { border: none !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; display: block !important; line-height: 0 !important; }
 
-[data-testid="stFileUploader"]       { background: var(--surface) !important; border: 1px dashed var(--line) !important; border-radius: 4px !important; padding: 1.75rem !important; }
-[data-testid="stFileUploader"]:hover { border-color: var(--warm) !important; }
+[data-testid="stFileUploader"]       { background: var(--surface-card) !important; border: 1px dashed var(--hairline-strong) !important; border-radius: 0 !important; padding: 1.5rem !important; }
+[data-testid="stFileUploader"]:hover { border-color: var(--ink) !important; }
 
 .stDownloadButton, .stButton {
     display: flex !important;
@@ -62,19 +65,20 @@ figure, figure img { border: none !important; border-radius: 0 !important; box-s
     width: 100% !important;
 }
 .stDownloadButton > button, .stButton > button {
-    background: var(--surface) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 6px !important;
-    color: var(--t2) !important;
-    font-size: 0.72rem !important;
-    font-weight: 600 !important;
-    padding: 0 10px !important;
+    background: transparent !important;
+    border: 1px solid var(--ink) !important;
+    border-radius: 9999px !important;
+    color: var(--ink) !important;
+    font-family: "IBM Plex Mono", ui-monospace, 'SF Mono', monospace !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    padding: 0 16px !important;
     width: 100% !important;
-    height: 34px !important;
-    min-height: 34px !important;
+    height: 32px !important;
+    min-height: 32px !important;
     line-height: 1 !important;
     box-shadow: none !important;
-    letter-spacing: 0.04em !important;
+    letter-spacing: 2px !important;
     text-transform: uppercase !important;
     transition: all .2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     display: flex !important;
@@ -84,25 +88,39 @@ figure, figure img { border: none !important; border-radius: 0 !important; box-s
     white-space: nowrap !important;
 }
 .stDownloadButton > button:hover, .stButton > button:hover {
-    border-color: var(--t1) !important;
-    color: var(--surface) !important;
-    background: var(--t1) !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    background: var(--ink) !important;
+    color: var(--canvas) !important;
+    border-color: var(--ink) !important;
+    box-shadow: none !important;
 }
+
 [data-testid="column"] > div {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
 }
+[data-testid="column"]  { padding: 0 0.25rem !important; }
 
-hr { border: none !important; border-top: 1px solid var(--line) !important; margin: 1.75rem 0 !important; }
+hr { border: none !important; border-top: 1px solid var(--hairline) !important; margin: 3rem 0 !important; }
 
-h1                          { font-size: 2.25rem !important; font-weight: 700 !important; letter-spacing: -0.03em !important; color: var(--t1) !important; line-height: 1.1 !important; margin: 0 !important; }
-p, li, label, td, th, span { color: var(--t2) !important; font-size: 0.875rem !important; line-height: 1.6 !important; }
+h1 {
+    font-family: "Saira Condensed", -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 32px !important;
+    font-weight: 400 !important;
+    letter-spacing: 2px !important;
+    color: var(--ink) !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    text-transform: uppercase !important;
+}
+p, li, label, td, th, span { color: var(--body) !important; font-size: 16px !important; line-height: 1.5 !important; }
 
-[data-testid="column"]  { padding: 0 0.35rem !important; }
 ::-webkit-scrollbar       { width: 4px; height: 4px; }
-::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--hairline-strong); border-radius: 0; }
+
+[data-testid="stFileUploader"] small { font-size: 0 !important; height: 0 !important; overflow: hidden !important; }
+[data-testid="stFileUploader"] small::after { content: "Kéo thả hoặc chọn tệp (JPG, PNG)" !important; font-size: 14px !important; height: auto !important; color: var(--muted) !important; font-family: "Google Sans Flex", sans-serif !important; }
+[data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] span { font-family: "IBM Plex Mono", monospace !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -122,7 +140,7 @@ def lum(rgb):
     return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
 
 def on_color(rgb):
-    return "#1D1D1F" if lum(rgb) > 155 else "#FFFFFF"
+    return "#000000" if lum(rgb) > 155 else "#FFFFFF"
 
 def wavg(grp):
     if not grp: return (128, 128, 128)
@@ -189,8 +207,16 @@ def classify_hybrid(families):
 
 
 # ─── HÀM TẠO ẢNH XUẤT FILE (DOWNLOAD) ─────────────────────────────────────────
+def _theme_bg():
+    """Return RGB tuple for canvas background."""
+    return (255, 255, 255)
+
+def _theme_ring():
+    """Return RGBA for wheel dot rings."""
+    return (0, 0, 0, 240)
+
 def bar_png(items, w=1400, h=60):
-    img = Image.new("RGB", (w, h), (245, 245, 247))
+    img = Image.new("RGB", (w, h), _theme_bg())
     d = ImageDraw.Draw(img)
     x = 0
     tot = sum(i["pct"] for i in items)
@@ -207,7 +233,7 @@ def bar_png(items, w=1400, h=60):
     return buf.getvalue()
 
 def macro_png_tineye(ordered_macro_list, w=1400, h=80):
-    img = Image.new("RGB", (w, h), (245, 245, 247))
+    img = Image.new("RGB", (w, h), _theme_bg())
     d = ImageDraw.Draw(img)
     x = 0
     tot = sum(f["pct"] for f in ordered_macro_list)
@@ -259,7 +285,7 @@ def wheel_base(size=600):
 
 def make_wheel(pts, size=600, out=300):
     wimg = wheel_base(size)
-    bg = Image.new("RGBA", (size, size), (245, 245, 247, 255))
+    bg = Image.new("RGBA", (size, size), (*_theme_bg(), 255))
     bg.paste(wimg, (0, 0), wimg)
     wimg = bg
     d = ImageDraw.Draw(wimg)
@@ -268,26 +294,27 @@ def make_wheel(pts, size=600, out=300):
     sc = size / 800
     ring = int(19 * sc)
     dot  = int(13 * sc)
+    ring_color = _theme_ring()
     for it in sorted(pts, key=lambda x: x["pct"]):
         rc, gc, bc = it["rgb"]
         h, s, _ = colorsys.rgb_to_hsv(rc / 255, gc / 255, bc / 255)
         ang = h * 2 * np.pi - np.pi
         x = cx + s * mr * np.cos(ang)
         y = cy + s * mr * np.sin(ang)
-        d.ellipse([x-ring, y-ring, x+ring, y+ring], fill=(255, 255, 255, 240))
+        d.ellipse([x-ring, y-ring, x+ring, y+ring], fill=ring_color)
         d.ellipse([x-dot,  y-dot,  x+dot,  y+dot],  fill=(rc, gc, bc, 255))
     return wimg.resize((out, out), resample=RESAMPLE)
 
 
 # ─── TIÊU ĐỀ CHÍNH APP ────────────────────────────────────────────────────────
 st.markdown("""
-<div style="margin-bottom:1.5rem;">
-    <div style="font-family:'Google Sans Flex',sans-serif;font-size:2.25rem;font-weight:700;
-                color:#1D1D1F;letter-spacing:-0.03em;line-height:1.1;">
-        Beyond Photography
-    </div>
-    <div style="margin-top:.45rem;font-size:.68rem;font-weight:600;letter-spacing:.2em;
-                text-transform:uppercase;color:var(--t3);">Hệ thống phân tích màu sắc cấu trúc thị giác</div>
+<div style="margin-bottom:2rem;">
+        <div style="font-family:'Saira Condensed',sans-serif;font-size:24px;font-weight:400;
+                    color:var(--ink);letter-spacing:1.5px;line-height:1.3;text-transform:uppercase;">
+            VISUAL DECONSTRUCTION | BEYOND PHOTOGRAPHY
+        </div>
+        <div style="margin-top:.5rem;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;
+                    letter-spacing:2px;text-transform:uppercase;color:var(--muted);">CẤU TRÚC MÀU SẮC</div>
 </div>
 """, unsafe_allow_html=True)
 st.markdown("---")
@@ -303,7 +330,7 @@ ad = as_ = aa = (128,128,128)
 
 # ─── CỘT TRÁI: INPUT & THANH TỶ LỆ ĐỨNG FLEXIBLE THEO ẢNH GỐC ────────────────
 with col_left:
-    st.markdown("<p style='font-size:0.8rem;font-weight:600;color:var(--t2);margin-bottom:0.3rem;'>Tải hình ảnh</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-family:\"IBM Plex Mono\",monospace;font-size:11px;font-weight:400;color:var(--muted);margin-bottom:0.3rem;letter-spacing:2px;text-transform:uppercase;'>UP ẢNH LÊN</p>", unsafe_allow_html=True)
     up = st.file_uploader("upload", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
 
 
@@ -451,17 +478,17 @@ with col_left:
             if pct_f > 0:
                 tc = on_color(f["macro"]["rgb"])
                 label = f'{pct_f:.1f}%' if pct_f >= 6 else ""
-                vertical_items_html += f'<div style="background:{f["macro"]["hex"]}; flex:{pct_f}; width:100%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:{tc};" title="[{f["macro"]["category"]}] {f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
+                vertical_items_html += f'<div style="background:{f["macro"]["hex"]}; flex:{pct_f}; width:100%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:400; color:{tc}; letter-spacing:1px;" title="[{f["macro"]["category"]}] {f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
 
         side_by_side_layout = f"""
-        <div style="display: flex; gap: 16px; align-items: stretch; width: 100%; margin-top: 5px;">
+        <div style="display: flex; gap: 40px; align-items: stretch; width: 100%; margin-top: 5px;">
             <div style="flex: 1; display: flex; flex-direction: column;">
-                <div style="font-size:.65rem;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Ảnh gốc</div>
-                <img src="data:image/jpeg;base64,{img_b64}" style="width:100%; height:auto; display:block; border:1px solid var(--line);" />
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:var(--muted);text-transform:uppercase;margin-bottom:6px;letter-spacing:2px;">ẢNH GỐC</div>
+                <img src="data:image/jpeg;base64,{img_b64}" style="width:100%; height:auto; display:block; border:1px solid var(--hairline);" />
             </div>
             <div style="flex: 1; display: flex; flex-direction: column;">
-                <div style="font-size:.65rem;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Thanh tỷ lệ đứng</div>
-                <div style="display:flex; flex-direction:column; width:100%; flex:1; border:1px solid var(--line); overflow:hidden;">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:var(--muted);text-transform:uppercase;margin-bottom:6px;letter-spacing:2px;">THANH TỶ LỆ ĐỨNG</div>
+                <div style="display:flex; flex-direction:column; width:100%; flex:1; border:1px solid var(--hairline); overflow:hidden;">
                     {vertical_items_html}
                 </div>
             </div>
@@ -470,19 +497,19 @@ with col_left:
         st.markdown(side_by_side_layout, unsafe_allow_html=True)
 
         chips = ""
-        for rgb_c, lbl, p, n in [(ad, "Chính", pd, len(dom)), (as_, "Phụ", ps, len(sec)), (aa, "Nhấn", pa, len(acc))]:
+        for rgb_c, lbl, p, n in [(ad, "CHÍNH", pd, len(dom)), (as_, "PHỤ", ps, len(sec)), (aa, "NHẤN", pa, len(acc))]:
             chips += (
-                f'<div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);padding:5px 11px;">'
+                f'<div style="display:flex;align-items:center;gap:6px;background:var(--surface-card);border:1px solid var(--hairline);padding:5px 11px;">'
                 f'<div style="width:8px;height:8px;background:{rgb_to_hex(rgb_c)};"></div>'
-                f'<span style="font-size:.68rem;font-weight:500;color:var(--t2);">'
-                f'{lbl} {p:.1f}% <span style="color:var(--t3);">({n} sắc độ)</span></span></div>'
+                f'<span style="font-family:\"IBM Plex Mono\",monospace;font-size:11px;font-weight:400;color:var(--body);letter-spacing:2px;text-transform:uppercase;">'
+                f'{lbl} {p:.1f}% <span style="color:var(--muted);">({n} sắc độ)</span></span></div>'
             )
-        st.markdown(f'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:.7rem;">{chips}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:.7rem;">{chips}</div>', unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:4.5rem 1.5rem;text-align:center;margin-top:.5rem;">
-        <div style="font-size:0.9rem;color:var(--t2);">Chưa có ảnh</div>
-        <div style="font-size:.75rem;color:var(--t3);margin-top:.4rem;">Tải ảnh hoặc dán từ Clipboard để bắt đầu</div>
+        st.markdown("""<div style="background:var(--surface-card);border:1px solid var(--hairline);padding:4.5rem 1.5rem;text-align:center;margin-top:.5rem;">
+        <div style="font-family:'Saira Condensed',sans-serif;font-size:16px;font-weight:400;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;">CHƯA CÓ ẢNH</div>
+        <div style="font-family:'Google Sans Flex',sans-serif;font-size:14px;color:var(--muted);margin-top:.4rem;">Tải ảnh hoặc dán từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
 
 
@@ -501,50 +528,49 @@ with col_right:
         wimg_600 = make_wheel(all_pts, size=600, out=300)
 
         with wc:
-            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:.4rem;">Bánh xe màu sắc</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">BÁNH XE MÀU SẮC</div>', unsafe_allow_html=True)
             st.markdown(f'<img src="data:image/png;base64,{img_to_b64(wimg_600, "PNG")}" style="width:210px;max-width:100%;display:block;" />', unsafe_allow_html=True)
             st.markdown("<div style='height:.5rem'></div>", unsafe_allow_html=True)
             buf_w = io.BytesIO()
             wimg_600.save(buf_w, "PNG")
 
             wcol1, wcol2 = st.columns([1, 1])
-            with wcol1: st.download_button("📥 TẢI VỀ", data=buf_w.getvalue(), file_name="color_wheel.png", mime="image/png", key="dl_wheel", use_container_width=True)
+            with wcol1: st.download_button("TẢI VỀ", data=buf_w.getvalue(), file_name="color_wheel.png", mime="image/png", key="dl_wheel", use_container_width=True)
             with wcol2:
-                if st.button("📋 COPY", key="copy_wheel", use_container_width=True):
-                    if copy_bytes_to_clipboard(buf_w.getvalue()): st.toast("Đã copy bánh xe màu!", icon="📋")
+                if st.button("COPY", key="copy_wheel", use_container_width=True):
+                    if copy_bytes_to_clipboard(buf_w.getvalue()): st.toast("Đã copy bánh xe màu!", icon="")
 
         with lc:
-            st.markdown('<div style="font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:.5rem;">Màu đại diện nhóm</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">MÀU ĐẠI DIỆN NHÓM</div>', unsafe_allow_html=True)
             for g in gs:
                 st.markdown(f"""
-                <div style="display:flex;align-items:stretch;margin-bottom:6px;border:1px solid var(--line);overflow:hidden;height:60px;">
+                <div style="display:flex;align-items:stretch;margin-bottom:6px;border:1px solid var(--hairline);overflow:hidden;height:60px;">
                     <div style="width:55px;background:{g['avg_hex']};flex-shrink:0;"></div>
-                    <div style="padding:6px 12px;display:flex;flex-direction:column;justify-content:center;background:#fff;flex:1;">
-                        <div style="font-size:.82rem;font-weight:600;color:var(--t1);">{g['name']} <span style="font-size:.7rem;font-weight:400;color:var(--t3);margin-left:4px;">{g['sub']}</span></div>
-                        <div style="font-size:.7rem;color:var(--t3);">{g['avg_hex']} &nbsp;·&nbsp; <strong style="color:var(--t1);">{g['total_pct']:.1f}%</strong></div>
+                    <div style="padding:6px 12px;display:flex;flex-direction:column;justify-content:center;background:var(--surface-card);flex:1;">
+                        <div style="font-family:'Saira Condensed',sans-serif;font-size:16px;font-weight:400;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;">{g['name']} <span style="font-family:'Google Sans Flex',sans-serif;font-size:12px;font-weight:400;color:var(--muted);margin-left:4px;letter-spacing:0;text-transform:none;">{g['sub']}</span></div>
+                        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;">{g['avg_hex']} &nbsp;·&nbsp; <span style="color:var(--ink);">{g['total_pct']:.1f}%</span></div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
         st.markdown("---")
 
-        # ── B · CÁC THANH TỶ LỆ PHÂN BỐ NGANG ──
-        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:.75rem;">Dải phân bố ngang</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">DẢI PHÂN BÓ NGANG</div>', unsafe_allow_html=True)
 
         mcol1, mcol2, mcol3 = st.columns([4.0, 1.2, 1.2])
-        with mcol1: st.markdown('<div style="font-size:.82rem;font-weight:600;color:var(--t1);margin-top:0.3rem;">Thanh tỷ lệ tổng quát</div>', unsafe_allow_html=True)
-        with mcol2: st.download_button("📥 TẢI VỀ", data=macro_png_tineye(ordered_macro_list), file_name="bar_macro.png", mime="image/png", key="dl_macro", use_container_width=True)
+        with mcol1: st.markdown('<div style="font-family:\'Saira Condensed\',sans-serif;font-size:16px;font-weight:400;color:var(--ink);margin-top:0.3rem;letter-spacing:1.5px;text-transform:uppercase;">THANH TỶ LỆ TỔNG QUÁT</div>', unsafe_allow_html=True)
+        with mcol2: st.download_button("TẢI VỀ", data=macro_png_tineye(ordered_macro_list), file_name="bar_macro.png", mime="image/png", key="dl_macro", use_container_width=True)
         with mcol3:
-            if st.button("📋 COPY", key="copy_macro", use_container_width=True):
-                if copy_bytes_to_clipboard(macro_png_tineye(ordered_macro_list)): st.toast("Đã copy dải màu tổng quát!", icon="📋")
+            if st.button("COPY", key="copy_macro", use_container_width=True):
+                if copy_bytes_to_clipboard(macro_png_tineye(ordered_macro_list)): st.toast("Đã copy dải màu tổng quát!", icon="")
 
-        bar_macro_html = '<div style="display:flex;width:100%;height:32px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 1.2rem 0;">'
+        bar_macro_html = '<div style="display:flex;width:100%;height:32px;overflow:hidden;border:1px solid var(--hairline);margin:0.4rem 0 1.2rem 0;">'
         for f in ordered_macro_list:
             pct_f = f["pct"] * 100
             if pct_f > 0:
                 tc = on_color(f["macro"]["rgb"])
                 label = f'{pct_f:.1f}%' if pct_f >= 5 else ""
-                bar_macro_html += f'<div style="background:{f["macro"]["hex"]};width:{pct_f}%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:{tc};" title="{f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
+                bar_macro_html += f'<div style="background:{f["macro"]["hex"]};width:{pct_f}%;height:100%;display:flex;align-items:center;justify-content:center;font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:400;color:{tc};letter-spacing:1px;" title="{f["macro"]["hex"]} ({pct_f:.1f}%)">{label}</div>'
         bar_macro_html += '</div>'
         st.markdown(bar_macro_html, unsafe_allow_html=True)
 
@@ -553,13 +579,13 @@ with col_right:
         master_detail = dom + sec + acc
         
         dcol1, dcol2, dcol3 = st.columns([4.0, 1.2, 1.2])
-        with dcol1: st.markdown(f'<div style="font-size:.82rem;font-weight:600;color:var(--t1);margin-top:0.3rem;">Thanh dải sắc độ chi tiết</div>', unsafe_allow_html=True)
-        with dcol2: st.download_button("📥 TẢI VỀ", data=bar_png(master_detail, h=30), file_name="bar_detail.png", mime="image/png", key="dl_detail", use_container_width=True)
+        with dcol1: st.markdown(f'<div style="font-family:\'Saira Condensed\',sans-serif;font-size:16px;font-weight:400;color:var(--ink);margin-top:0.3rem;letter-spacing:1.5px;text-transform:uppercase;">THANH DẢI SẮC ĐỘ CHI TIẾT</div>', unsafe_allow_html=True)
+        with dcol2: st.download_button("TẢI VỀ", data=bar_png(master_detail, h=30), file_name="bar_detail.png", mime="image/png", key="dl_detail", use_container_width=True)
         with dcol3:
-            if st.button("📋 COPY", key="copy_detail", use_container_width=True):
-                if copy_bytes_to_clipboard(bar_png(master_detail, h=30)): st.toast("Đã copy dải màu chi tiết!", icon="📋")
+            if st.button("COPY", key="copy_detail", use_container_width=True):
+                if copy_bytes_to_clipboard(bar_png(master_detail, h=30)): st.toast("Đã copy dải màu chi tiết!", icon="")
 
-        bar_detail_html = '<div style="display:flex;width:100%;height:16px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 1.5rem 0;">'
+        bar_detail_html = '<div style="display:flex;width:100%;height:16px;overflow:hidden;border:1px solid var(--hairline);margin:0.4rem 0 1.5rem 0;">'
         tot_m = sum(it["pct"] for it in master_detail)
         for it in master_detail:
             pv = (it["pct"] / tot_m * 100)
@@ -569,8 +595,7 @@ with col_right:
 
         st.markdown("---")
 
-        # ── C · THẺ HIỂN THỊ SWATCHES TỪNG PHÂN VÙNG BẬC THANG ─────────────────
-        st.markdown('<div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:1rem;">Chi tiết từng phân vùng bậc thang</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">CHI TIẾT TỪNG PHẦN VÙNG BẬC THANG</div>', unsafe_allow_html=True)
 
         def render_group(g):
             items_sorted_by_pct = sorted(g["items"], key=lambda x: x["pct"], reverse=True)
@@ -578,13 +603,13 @@ with col_right:
 
             gcol1, gcol2, gcol3 = st.columns([4.0, 1.2, 1.2])
             with gcol1:
-                st.markdown(f'<div style="display:flex;align-items:baseline;gap:8px;margin-top:0.2rem;"><span style="font-size:1rem;font-weight:600;color:var(--t1);">{g["name"]}</span><span style="font-size:.75rem;color:var(--t3);">{g["sub"]}</span><span style="font-size:.9rem;font-weight:600;color:var(--t1);margin-left:6px;">{g["total_pct"]:.1f}%</span></div>', unsafe_allow_html=True)
-            with gcol2: st.download_button("📥 TẢI VỀ", data=bar_png(items_smooth_hue), file_name=f'bar_{g["key"]}.png', mime="image/png", key=f'dl_g_{g["key"]}', use_container_width=True)
+                st.markdown(f'<div style="display:flex;align-items:baseline;gap:8px;margin-top:0.2rem;"><span style="font-family:\'Saira Condensed\',sans-serif;font-size:16px;font-weight:400;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;">{g["name"]}</span><span style="font-family:\'Google Sans Flex\',sans-serif;font-size:12px;color:var(--muted);letter-spacing:0;text-transform:none;">{g["sub"]}</span><span style="font-family:\'IBM Plex Mono\',monospace;font-size:14px;font-weight:400;color:var(--ink);margin-left:6px;letter-spacing:1px;">{g["total_pct"]:.1f}%</span></div>', unsafe_allow_html=True)
+            with gcol2: st.download_button("TẢI VỀ", data=bar_png(items_smooth_hue), file_name=f'bar_{g["key"]}.png', mime="image/png", key=f'dl_g_{g["key"]}', use_container_width=True)
             with gcol3:
-                if st.button("📋 COPY", key=f'copy_g_{g["key"]}', use_container_width=True):
-                    if copy_bytes_to_clipboard(bar_png(items_smooth_hue)): st.toast(f"Đã sao chép dải màu nhóm!", icon="📋")
+                if st.button("COPY", key=f'copy_g_{g["key"]}', use_container_width=True):
+                    if copy_bytes_to_clipboard(bar_png(items_smooth_hue)): st.toast(f"Đã sao chép dải màu nhóm!", icon="")
 
-            bh = '<div style="display:flex;width:100%;height:26px;overflow:hidden;border:1px solid var(--line);margin:0.4rem 0 .8rem 0;">'
+            bh = '<div style="display:flex;width:100%;height:26px;overflow:hidden;border:1px solid var(--hairline);margin:0.4rem 0 .8rem 0;">'
             gtot = sum(i["pct"] for i in items_smooth_hue)
             for it in items_smooth_hue:
                 w = (it["pct"] / gtot * 100) if gtot > 0 else (100 / len(items_smooth_hue))
@@ -600,9 +625,9 @@ with col_right:
                     pv = it["pct"] * 100
                     with cols[ci]:
                         st.markdown(
-                            f'<div style="background:{it["hex"]};height:20px;border:1px solid rgba(0,0,0,.06);margin-bottom:3px;"></div>'
-                            f'<div style="font-size:.65rem;text-align:center;font-weight:600;color:var(--t2);line-height:1.1;">{pv:.1f}%</div>'
-                            f'<div style="font-size:.58rem;text-align:center;color:var(--t3);font-family:monospace;">{it["hex"]}</div>',
+                            f'<div style="background:{it["hex"]};height:20px;border:1px solid var(--hairline);margin-bottom:3px;"></div>'
+                            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;text-align:center;font-weight:400;color:var(--body);line-height:1.1;letter-spacing:1px;">{pv:.1f}%</div>'
+                            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;text-align:center;color:var(--muted);letter-spacing:0.5px;">{it["hex"]}</div>',
                             unsafe_allow_html=True
                         )
             st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
@@ -610,19 +635,19 @@ with col_right:
         for idx, g in enumerate(gs):
             render_group(g)
             if idx < len(gs) - 1:
-                st.markdown('<div style="border-top:1px solid var(--line);margin-bottom:1rem;"></div>', unsafe_allow_html=True)
+                st.markdown('<div style="border-top:1px solid var(--hairline);margin-bottom:1rem;"></div>', unsafe_allow_html=True)
 
     else:
-        st.markdown("""<div style="background:#fff;border:1px solid var(--line);padding:5rem 2rem;text-align:center;margin-top:2rem;">
-        <div style="font-size:1.4rem;font-weight:300;color:var(--t3);">Chưa có ảnh để phân tích</div>
-        <div style="font-size:.8rem;color:var(--t3);margin-top:.5rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
+        st.markdown("""<div style="background:var(--surface-card);border:1px solid var(--hairline);padding:5rem 2rem;text-align:center;margin-top:2rem;">
+        <div style="font-family:'Saira Condensed',sans-serif;font-size:24px;font-weight:400;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;">CHƯA CÓ ẢNH ĐỂ PHÂN TÍCH</div>
+        <div style="font-family:'Google Sans Flex',sans-serif;font-size:14px;color:var(--muted);margin-top:.5rem;">Tải ảnh hoặc dán ảnh từ Clipboard để bắt đầu</div>
         </div>""", unsafe_allow_html=True)
 
 
 # ─── PHẦN CHÂN TRANG (FOOTER) THIẾT KẾ TỐI GIẢN ────────────────────────────────
 st.markdown("""
 <hr>
-<div style="text-align: center; padding: 1.5rem 0 1rem; font-size: 0.75rem; color: var(--t3); letter-spacing: 0.08em; text-transform: uppercase;">
-    BEYOND PHOTOGRAPHY © 2025 • <a href="https://beyondphotography.vn" target="_blank" style="color: var(--t2); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--line);">beyondphotography.vn</a>
+<div style="text-align: center; padding: 1.5rem 0 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase;">
+    Dự án Visual Deconstruction – Beyond Photography · Minh Tuấn · <a href="https://beyondphotography.vn/" target="_blank" style="color: var(--link); text-decoration: none; font-weight: 400; border-bottom: 1px solid var(--hairline);">beyondphotography.vn</a>
 </div>
 """, unsafe_allow_html=True)
